@@ -1,0 +1,60 @@
+{
+    "name": "omatech/hexagon",
+    "description": "Hexagonal Architecture scaffold generator",
+    "keywords": [
+        "omatech",
+        "hexagon"
+    ],
+    "homepage": "https://github.com/omatech/hexagon",
+    "license": "MIT",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Edgar Puig",
+            "email": "epuig@omatech.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^7.1",
+        "illuminate/support": "^6.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^4.0",
+        "phpunit/phpunit": "^8.0",
+        "omatech/hexagon": "dev-master"
+    },
+    "autoload": {
+        "psr-4": {
+            "Omatech\\Hexagon\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Omatech\\Hexagon\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit",
+        "test-coverage": "vendor/bin/phpunit --coverage-html coverage"
+
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Omatech\\Hexagon\\HexagonServiceProvider"
+            ],
+            "aliases": {
+                "Hexagon": "Omatech\\Hexagon\\HexagonFacade"
+            }
+        }
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "/var/www/Package/oma-quotes"
+        }
+}
