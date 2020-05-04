@@ -1,7 +1,6 @@
 build
 composer.lock
 docs
-vendor
 coverage
 .DS_Store
 /.idea/
@@ -12,10 +11,4 @@ coverage
 .env
 /vendor/
 /node_modules/
-/public/fonts
-/public/mix-manifest.json
-/public/css
-/public/js
-/public/img
-/public/hot
-/public/storage
+.editorconfig
