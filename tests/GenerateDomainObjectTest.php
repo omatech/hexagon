@@ -5,7 +5,7 @@ namespace Omatech\Hexagon\Tests;
 use Orchestra\Testbench\TestCase;
 use Omatech\Hexagon\HexagonServiceProvider;
 
-class ExampleTest extends TestCase
+class GenerateDomainObjectTest extends TestCase
 {
 
     protected function getPackageProviders($app)

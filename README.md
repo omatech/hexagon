@@ -1,4 +1,4 @@
-# Very short description of the package
+# Hexagon a package from Omatech
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/omatech/hexagon.svg?style=flat-square)](https://packagist.org/packages/omatech/hexagon)
 [![Build Status](https://img.shields.io/travis/omatech/hexagon/master.svg?style=flat-square)](https://travis-ci.org/omatech/hexagon)
