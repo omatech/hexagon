@@ -5,7 +5,7 @@
 [![Quality Score](https://img.shields.io/scrutinizer/g/omatech/hexagon.svg?style=flat-square)](https://scrutinizer-ci.com/g/omatech/hexagon)
 [![Total Downloads](https://img.shields.io/packagist/dt/omatech/hexagon.svg?style=flat-square)](https://packagist.org/packages/omatech/hexagon)
 
-This is where your description should go. Try and limit it to a paragraph or two, and maybe throw in a mention of what PSRs you support to avoid any confusion with users and contributors.
+File structure generator for hexagonal architecture adapted to Laravel
 
 ## Installation
 
@@ -18,7 +18,20 @@ composer require omatech/hexagon
 ## Usage
 
 ``` php
-// Usage description here
+Configuration
+php artisan vendor:publish --tag=hexagon-config
+
+Set-up
+- create Application, Domain and Infrastructure folders into app folder
+- Move Http and Console folders into app\Infrastructure and modify Kernels namespace
+- Modify RouteServiceProvider $namespace attribute to 'App\Infrastructure\Http\Controllers
+- Modify bootstrap/app.php: Adjust Http and Console Kernels namespaces
+- Move Exception folder into app\Domain and modify Handler namespace
+- Modify bootstrap/app.php: Adjust Handler namespaces
+- Move app/User.php Model to app\Infrastructure\User folder and modify namespace
+- Modify config/auth.php adapting User class to the new namespace
+- Create RepositoryServiceProvider.php into app/Providers
+
 ```
 
 ### Testing

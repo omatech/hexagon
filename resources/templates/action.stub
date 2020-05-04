@@ -1,0 +1,9 @@
+<?php
+
+namespace App\Infrastructure\${Domain};
+
+use App\Domain\${Domain}\${Action}Repository;
+
+class ${Action} implements ${Action}Repository
+{
+}

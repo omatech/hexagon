@@ -1,0 +1,15 @@
+<?php
+
+namespace App\Application\${Domain}\${UseCase}${Post};
+
+final class ${UseCase}InputAdapter
+{
+
+    // ${Attributes}
+
+    public function __construct( /* ${AttributesWithTypes} */) {
+        /* ${AttributeAssignation} */
+    }
+
+    // ${AttributeGetters}
+}

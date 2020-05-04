@@ -1,0 +1,27 @@
+<?php
+
+${Namespace}
+
+use App\Application\${Domain}\${UseCase}\${UseCase};
+use App\Application\${Domain}\${UseCase}\${UseCase}InputAdapter${PostInput};
+use App\Application\${Domain}\${UseCase}\${UseCase}OutputAdapter${PostOutput};
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+
+final class ${UseCase}Controller extends Controller
+{
+    public function __construct(Request $request)
+    {
+        parent::__construct($request);
+    }
+
+    public function __invoke(${UseCase} $${useCase}, Request $request)
+    {
+        /** @var ${UseCase}OutputAdapter $response */
+        $response = $${useCase}->execute(
+            new ${UseCase}InputAdapter()
+        );
+
+        return response()->view('', $response->getOriginalContent()['data']);
+    }
+}

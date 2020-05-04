@@ -1,0 +1,11 @@
+<?php
+
+namespace App\Domain\${Domain};
+
+final class ${Domain}DO
+{
+    // ${Attributes}
+
+    // ${AttributeGetters}
+    // ${AttributeSetters}
+}
