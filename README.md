@@ -24,7 +24,7 @@ php artisan vendor:publish --tag=hexagon-config
 Set-up
 - create Application, Domain and Infrastructure folders into app folder
 - Move Http and Console folders into app\Infrastructure and modify Kernels namespace
-- Modify RouteServiceProvider $namespace attribute to 'App\Infrastructure\Http\Controllers
+- Modify RouteServiceProvider $namespace attribute to 'App\Infrastructure\Http\Controllers'
 - Modify bootstrap/app.php: Adjust Http and Console Kernels namespaces
 - Move Exception folder into app\Domain and modify Handler namespace
 - Modify bootstrap/app.php: Adjust Handler namespaces
