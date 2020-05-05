@@ -13,8 +13,14 @@ return [
         'application' => 'app/Application/',
         'domain' => 'app/Domain',
         'infrastructure' => 'app/Infrastructure/',
-        'input-adapter' => '',
-        'output-adapter' => ''
+        'input-adapter' => [
+            'name' => 'InputAdapter',  // added to the use case name to generate file name
+            'folder' => '' // location of the input adapter inside use case directory, defaults to use case directory
+        ],
+        'output-adapter' => [
+            'name' => 'OutputAdapter', // added to the use case name to generate file name
+            'folder' => '' // location of the output adapter inside use case directory, defaults to use case directory
+        ],
     ],
 
     /**

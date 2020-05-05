@@ -35,9 +35,11 @@ trait Instantiatable
         return base_path('vendor/omatech/hexagon/resources/templates/' . $template . '.stub');
     }
 
-    protected function replace(string $variable, string $value, string $template): string
+    protected function replace(string $variable, string $value, string $template, $caps = true): string
     {
-        $value = ucfirst($value);
+        if ($caps) {
+            $value = ucfirst($value);
+        }
 
         return str_replace('${' . $variable . '}', $value, $template);
     }

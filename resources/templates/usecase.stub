@@ -1,26 +1,23 @@
 <?php
 
 namespace App\Application\${Domain}\${UseCase};
-
-use App\Application\${Domain}\${UseCase}\${UseCase}InputAdapter;
-use App\Application\${Domain}\${UseCase}\${UseCase}OutputAdapter;
-
+${InputUse}${OutputUse}
 final class ${UseCase}
 {
     public function __construct() {
     }
 
-    public function execute(${UseCase}InputAdapter $request): ${UseCase}OutputAdapter
+    public function execute(${UseCase}${InputName} $request): ${UseCase}${OutputName}
     {
         try
         {
 
         } catch(\Exception $e){
 
-            return ${UseCase}OutputAdapter::ofError();
+            return ${UseCase}${OutputName}::ofError();
         }
 
-        return ${UseCase}OutputAdapter::ofSuccess();
+        return ${UseCase}${OutputName}::ofSuccess();
     }
 }
 

@@ -38,15 +38,27 @@ final class GenerateController
 
         $template = $this->getTemplate(strtolower($type).'-controller');
 
-        $postInput = config('hexagon.directories.input-adapter', '');
-        $postOutput = config('hexagon.directories.output-adapter', '');
+        $inputName = config('hexagon.directories.input-adapter.name', 'InputAdapter') ?? 'InputAdapter';
+        $outputName = config('hexagon.directories.output-adapter.name', 'OutputAdapter') ?? 'OutputAdapter';
+        $inputFolder = config('hexagon.directories.input-adapter.folder', '');
+        $outputFolder = config('hexagon.directories.output-adapter.folder', '');
+
+        if (!empty($inputFolder)) {
+            $inputFolder =  trim($inputFolder, '/\\') . '\\';
+        }
+
+        if (!empty($outputFolder)) {
+            $outputFolder =  trim($outputFolder, '/\\') . '\\';
+        }
 
         $template = $this->replace('Domain', $domain, $template);
         $template = $this->replace('UseCase', $useCase, $template);
         $template = $this->replace('useCase', lcfirst($useCase), $template);
         $template = $this->replace('Namespace', $namespace, $template);
-        $template = $this->replace('PostInput', $postInput, $template);
-        $template = $this->replace('PostOutput', $postOutput, $template);
+        $template = $this->replace('InputName', $inputName, $template);
+        $template = $this->replace('OutputName', $outputName, $template);
+        $template = $this->replace('InputFolder', $inputFolder ?? '', $template);
+        $template = $this->replace('OutputFolder', $outputFolder ?? '', $template);
 //        $template = $this->clearTemplate($template);
 
         try {

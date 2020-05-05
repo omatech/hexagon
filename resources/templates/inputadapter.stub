@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Application\${Domain}\${UseCase}${Post};
+namespace App\Application\${Domain}\${UseCase}${Folder};
 
-final class ${UseCase}InputAdapter
+final class ${UseCase}${Name}
 {
 
     // ${Attributes}

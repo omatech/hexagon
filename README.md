@@ -15,13 +15,14 @@ You can install the package via composer:
 composer require omatech/hexagon
 ```
 
-## Usage
+## Configuration
 
 ``` php
-Configuration
 php artisan vendor:publish --tag=hexagon-config
+```
+## Setup
 
-Set-up
+```
 - create Application, Domain and Infrastructure folders into app folder
 - Move Http and Console folders into app\Infrastructure and modify Kernels namespace
 - Modify RouteServiceProvider $namespace attribute to 'App\Infrastructure\Http\Controllers'
@@ -31,6 +32,12 @@ Set-up
 - Move app/User.php Model to app\Infrastructure\User folder and modify namespace
 - Modify config/auth.php adapting User class to the new namespace
 - Create RepositoryServiceProvider.php into app/Providers
+```
+
+## Customizing Templates
+
+```
+php artisan vendor:publish --tag:hexagon-templates
 
 ```
 

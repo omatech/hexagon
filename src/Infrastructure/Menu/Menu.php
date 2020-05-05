@@ -128,7 +128,7 @@ class Menu
 
     protected function requireControllerType(CliMenu $parentMenu): ?string
     {
-        $subMenu = new CliMenu('Choose a Domain', [], $parentMenu->getTerminal(), $parentMenu->getStyle());
+        $subMenu = new CliMenu('Choose a Controller Type', [], $parentMenu->getTerminal(), $parentMenu->getStyle());
 
         $controllerTypes = self::CONTROLLER_TYPES;
 

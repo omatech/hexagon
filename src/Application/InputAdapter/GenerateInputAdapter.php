@@ -20,30 +20,41 @@ final class GenerateInputAdapter
 
     public function execute(GenerateInputAdapterInputAdapter $inputAdapter): GenerateInputAdapterOutputAdapter
     {
-        $domain = $this->studlyNames($inputAdapter->getDomain());
-        $useCase = $this->studlyNames($inputAdapter->getUseCase());
-
-        $pathPrefix = config('hexagon.directories.application', 'app/Application/');
-        $pathPrefix = rtrim($pathPrefix, '/') . '/';
-        $pathPost = config('hexagon.directories.input-adapter', '');
-
-        $path = base_path($pathPrefix) . $domain . '/' . $useCase . '/' . $pathPost;
-
-        $file =  $useCase . 'InputAdapter.php';
-
-        if (file_exists($path . '/' . $file) && !$inputAdapter->isOverwrite()) {
-            return GenerateInputAdapterOutputAdapter::ofError('File Already Exists!', 'file_already_exists');
-        }
-
-        $template = $this->getTemplate('input-adapter');
-
-        $template = $this->replace('Domain', $domain, $template);
-        $template = $this->replace('UseCase', $useCase, $template);
-        $template = $this->replace('useCase', lcfirst($useCase), $template);
-        $template = $this->replace('Post', $pathPost, $template);
-//        $template = $this->clearTemplate($template);
-
         try {
+            $domain = $this->studlyNames($inputAdapter->getDomain());
+            $useCase = $this->studlyNames($inputAdapter->getUseCase());
+
+            $applicationPath = config('hexagon.directories.application', 'app/Application/');
+            $applicationPath = rtrim($applicationPath, '/') . '/';
+            $folder = config('hexagon.directories.input-adapter.folder', '');
+
+            if (!empty($folder)) {
+                $folder =  trim($folder, '/');
+            }
+
+            $name = config('hexagon.directories.input-adapter.name', 'InputAdapter') ?? 'InputAdapter';
+
+            $path = base_path($applicationPath) . $domain . '/' . $useCase . '/' . $folder;
+
+            $file =  $useCase . $name . '.php';
+
+            if (file_exists($path . '/' . $file) && !$inputAdapter->isOverwrite()) {
+                return GenerateInputAdapterOutputAdapter::ofError('File Already Exists!', 'file_already_exists');
+            }
+
+            $template = $this->getTemplate('input-adapter');
+
+            if (!empty($folder)) {
+               $folder = '\\' . $folder;
+            }
+
+            $template = $this->replace('Domain', $domain, $template);
+            $template = $this->replace('UseCase', $useCase, $template);
+            $template = $this->replace('useCase', lcfirst($useCase), $template);
+            $template = $this->replace('Folder', $folder ?? '', $template);
+            $template = $this->replace('Name', $name, $template);
+    //        $template = $this->clearTemplate($template);
+
             $this->instantiateRepository->execute($template, $path, $file);
         } catch (\Exception $e) {
             return GenerateInputAdapterOutputAdapter::ofError($e->getMessage());

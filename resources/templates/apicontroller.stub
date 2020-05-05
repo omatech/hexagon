@@ -3,8 +3,8 @@
 ${Namespace}
 
 use App\Application\${Domain}\${UseCase}\${UseCase};
-use App\Application\${Domain}\${UseCase}\${UseCase}InputAdapter${PostInput};
-use App\Application\${Domain}\${UseCase}\${UseCase}OutputAdapter${PostOutput};
+use App\Application\${Domain}\${UseCase}\${InputFolder}${UseCase}${InputName};
+use App\Application\${Domain}\${UseCase}\${OutputFolder}${UseCase}${OutputName};
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -17,9 +17,9 @@ final class ${UseCase}Controller extends Controller
 
     public function __invoke(${UseCase} $${useCase}, Request $request)
     {
-        /** @var ${UseCase}OutputAdapter $response */
+        /** @var ${UseCase}${OutputName} $response */
         return $${useCase}->execute(
-            new ${UseCase}InputAdapter()
+            new ${UseCase}${InputName}()
         );
     }
 }
