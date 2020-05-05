@@ -1,6 +1,6 @@
 <?php
 
-namespace Omatech\Hexagon\Application\ActionRepository;
+namespace Omatech\Hexagon\Application\ActionRepository\GenerateActionRepository;
 
 final class GenerateActionRepositoryInputAdapter
 {

@@ -2,18 +2,18 @@
 
 namespace Omatech\Hexagon\Infrastructure\Menu;
 
-use Omatech\Hexagon\Application\Controller\GenerateController;
-use Omatech\Hexagon\Application\Controller\GenerateControllerInputAdapter;
-use Omatech\Hexagon\Application\Controller\GenerateControllerOutputAdapter;
-use Omatech\Hexagon\Application\InputAdapter\GenerateInputAdapter;
-use Omatech\Hexagon\Application\InputAdapter\GenerateInputAdapterInputAdapter;
-use Omatech\Hexagon\Application\InputAdapter\GenerateInputAdapterOutputAdapter;
-use Omatech\Hexagon\Application\OutputAdapter\GenerateOutputAdapter;
-use Omatech\Hexagon\Application\OutputAdapter\GenerateOutputAdapterInputAdapter;
-use Omatech\Hexagon\Application\OutputAdapter\GenerateOutputAdapterOutputAdapter;
-use Omatech\Hexagon\Application\UseCase\GenerateUseCase;
-use Omatech\Hexagon\Application\UseCase\GenerateUseCaseInputAdapter;
-use Omatech\Hexagon\Application\UseCase\GenerateUseCaseOutputAdapter;
+use Omatech\Hexagon\Application\Controller\GenerateController\GenerateController;
+use Omatech\Hexagon\Application\Controller\GenerateController\GenerateControllerInputAdapter;
+use Omatech\Hexagon\Application\Controller\GenerateController\GenerateControllerOutputAdapter;
+use Omatech\Hexagon\Application\InputAdapter\GenerateInputAdapter\GenerateInputAdapter;
+use Omatech\Hexagon\Application\InputAdapter\GenerateInputAdapter\GenerateInputAdapterInputAdapter;
+use Omatech\Hexagon\Application\InputAdapter\GenerateInputAdapter\GenerateInputAdapterOutputAdapter;
+use Omatech\Hexagon\Application\OutputAdapter\GenerateOutputAdapter\GenerateOutputAdapter;
+use Omatech\Hexagon\Application\OutputAdapter\GenerateOutputAdapter\GenerateOutputAdapterInputAdapter;
+use Omatech\Hexagon\Application\OutputAdapter\GenerateOutputAdapter\GenerateOutputAdapterOutputAdapter;
+use Omatech\Hexagon\Application\UseCase\GenerateUseCase\GenerateUseCase;
+use Omatech\Hexagon\Application\UseCase\GenerateUseCase\GenerateUseCaseInputAdapter;
+use Omatech\Hexagon\Application\UseCase\GenerateUseCase\GenerateUseCaseOutputAdapter;
 use Omatech\Hexagon\Domain\Base\Exceptions\DirectoryDoesNotExistException;
 use Omatech\Hexagon\Domain\UseCase\Exception\UseCaseAlreadyExistsException;
 use PhpSchool\CliMenu\CliMenu;

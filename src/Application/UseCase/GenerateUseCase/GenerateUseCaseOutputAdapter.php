@@ -1,6 +1,6 @@
 <?php
 
-namespace Omatech\Hexagon\Application\UseCase;
+namespace Omatech\Hexagon\Application\UseCase\GenerateUseCase;
 
 use Illuminate\Http\JsonResponse;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Omatech\Hexagon\Application\Controller;
+namespace Omatech\Hexagon\Application\Controller\GenerateController;
 
 use Omatech\Hexagon\Application\Base\Instantiatable;
 use Omatech\Hexagon\Domain\File\Interfaces\InstantiateRepository;

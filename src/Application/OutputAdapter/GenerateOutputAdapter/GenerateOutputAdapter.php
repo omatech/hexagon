@@ -1,6 +1,6 @@
 <?php
 
-namespace Omatech\Hexagon\Application\OutputAdapter;
+namespace Omatech\Hexagon\Application\OutputAdapter\GenerateOutputAdapter;
 
 use Omatech\Hexagon\Application\Base\Instantiatable;
 use Omatech\Hexagon\Domain\File\Interfaces\InstantiateRepository;

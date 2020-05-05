@@ -1,6 +1,6 @@
 <?php
 
-namespace Omatech\Hexagon\Domain\UseCase\Exception;
+namespace Omatech\Hexagon\Application\UseCase\Exception;
 
 class UseCaseAlreadyExistsException extends \Exception
 {

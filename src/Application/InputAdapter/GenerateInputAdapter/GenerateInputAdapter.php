@@ -1,6 +1,6 @@
 <?php
 
-namespace Omatech\Hexagon\Application\InputAdapter;
+namespace Omatech\Hexagon\Application\InputAdapter\GenerateInputAdapter;
 
 use Omatech\Hexagon\Application\Base\Instantiatable;
 use Omatech\Hexagon\Domain\File\Interfaces\InstantiateRepository;

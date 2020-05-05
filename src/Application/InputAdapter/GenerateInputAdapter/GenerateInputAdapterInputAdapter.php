@@ -1,20 +1,20 @@
 <?php
 
-namespace Omatech\Hexagon\Application\Action;
+namespace Omatech\Hexagon\Application\InputAdapter\GenerateInputAdapter;
 
-final class GenerateActionInputAdapter
+final class GenerateInputAdapterInputAdapter
 {
     /** @var string */
     public $domain;
     /** @var string */
-    public $action;
+    public $useCase;
     /** @var bool */
     private $overwrite;
 
-    public function __construct(string $domain, string $action, bool $overwrite)
+    public function __construct(string $domain, string $useCase, bool $overwrite)
     {
         $this->domain = $domain;
-        $this->action = $action;
+        $this->useCase = $useCase;
         $this->overwrite = $overwrite;
     }
 
@@ -23,9 +23,9 @@ final class GenerateActionInputAdapter
         return $this->domain;
     }
 
-    public function getAction(): string
+    public function getUseCase(): string
     {
-        return $this->action;
+        return $this->useCase;
     }
 
     public function isOverwrite(): bool

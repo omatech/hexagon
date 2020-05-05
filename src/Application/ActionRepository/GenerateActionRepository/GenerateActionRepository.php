@@ -1,6 +1,6 @@
 <?php
 
-namespace Omatech\Hexagon\Application\ActionRepository;
+namespace Omatech\Hexagon\Application\ActionRepository\GenerateActionRepository;
 
 use Omatech\Hexagon\Application\Base\Instantiatable;
 use Omatech\Hexagon\Domain\File\Interfaces\InstantiateRepository;

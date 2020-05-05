@@ -2,12 +2,12 @@
 
 namespace Omatech\Hexagon\Infrastructure\Menu;
 
-use Omatech\Hexagon\Application\Action\GenerateAction;
-use Omatech\Hexagon\Application\Action\GenerateActionInputAdapter;
-use Omatech\Hexagon\Application\Action\GenerateActionOutputAdapter;
-use Omatech\Hexagon\Application\ActionRepository\GenerateActionRepository;
-use Omatech\Hexagon\Application\ActionRepository\GenerateActionRepositoryInputAdapter;
-use Omatech\Hexagon\Application\ActionRepository\GenerateActionRepositoryOutputAdapter;
+use Omatech\Hexagon\Application\Action\GenerateAction\GenerateAction;
+use Omatech\Hexagon\Application\Action\GenerateAction\GenerateActionInputAdapter;
+use Omatech\Hexagon\Application\Action\GenerateAction\GenerateActionOutputAdapter;
+use Omatech\Hexagon\Application\ActionRepository\GenerateActionRepository\GenerateActionRepository;
+use Omatech\Hexagon\Application\ActionRepository\GenerateActionRepository\GenerateActionRepositoryInputAdapter;
+use Omatech\Hexagon\Application\ActionRepository\GenerateActionRepository\GenerateActionRepositoryOutputAdapter;
 use Omatech\Hexagon\Domain\Action\Exception\ActionAlreadyExistsException;
 use Omatech\Hexagon\Domain\Base\Exceptions\DirectoryDoesNotExistException;
 use PhpSchool\CliMenu\CliMenu;

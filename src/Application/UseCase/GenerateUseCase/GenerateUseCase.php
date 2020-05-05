@@ -1,6 +1,6 @@
 <?php
 
-namespace Omatech\Hexagon\Application\UseCase;
+namespace Omatech\Hexagon\Application\UseCase\GenerateUseCase;
 
 use Omatech\Hexagon\Application\Base\Instantiatable;
 use Omatech\Hexagon\Domain\File\Interfaces\InstantiateRepository;

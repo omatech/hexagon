@@ -1,6 +1,6 @@
 <?php
 
-namespace Omatech\Hexagon\Application\Controller;
+namespace Omatech\Hexagon\Application\Controller\GenerateController;
 
 use Illuminate\Http\JsonResponse;
 

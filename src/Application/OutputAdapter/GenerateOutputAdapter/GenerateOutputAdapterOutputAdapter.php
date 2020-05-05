@@ -1,6 +1,6 @@
 <?php
 
-namespace Omatech\Hexagon\Application\OutputAdapter;
+namespace Omatech\Hexagon\Application\OutputAdapter\GenerateOutputAdapter;
 
 use Illuminate\Http\JsonResponse;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Omatech\Hexagon\Application\DomainObject;
+namespace Omatech\Hexagon\Application\DomainObject\GenerateDomainObject;
 
 use Omatech\Hexagon\Application\Base\Instantiatable;
 use Omatech\Hexagon\Domain\File\Interfaces\InstantiateRepository;

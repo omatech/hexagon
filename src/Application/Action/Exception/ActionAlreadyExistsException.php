@@ -1,6 +1,6 @@
 <?php
 
-namespace Omatech\Hexagon\Domain\Action\Exception;
+namespace Omatech\Hexagon\Application\Action\Exception;
 
 class ActionAlreadyExistsException extends \Exception
 {

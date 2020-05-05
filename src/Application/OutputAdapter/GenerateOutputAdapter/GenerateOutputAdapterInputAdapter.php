@@ -1,8 +1,8 @@
 <?php
 
-namespace Omatech\Hexagon\Application\InputAdapter;
+namespace Omatech\Hexagon\Application\OutputAdapter\GenerateOutputAdapter;
 
-final class GenerateInputAdapterInputAdapter
+final class GenerateOutputAdapterInputAdapter
 {
     /** @var string */
     public $domain;

@@ -1,8 +1,8 @@
 <?php
 
-namespace Omatech\Hexagon\Application\Controller;
+namespace Omatech\Hexagon\Application\UseCase\GenerateUseCase;
 
-final class GenerateControllerInputAdapter
+final class GenerateUseCaseInputAdapter
 {
     /** @var string */
     public $domain;
@@ -10,15 +10,12 @@ final class GenerateControllerInputAdapter
     public $useCase;
     /** @var bool */
     private $overwrite;
-    /** @var string */
-    private $type;
 
-    public function __construct(string $domain, string $useCase, bool $overwrite, string $type)
+    public function __construct(string $domain, string $useCase, bool $overwrite)
     {
         $this->domain = $domain;
         $this->useCase = $useCase;
         $this->overwrite = $overwrite;
-        $this->type = $type;
     }
 
     public function getDomain(): string
@@ -34,10 +31,5 @@ final class GenerateControllerInputAdapter
     public function isOverwrite(): bool
     {
         return $this->overwrite;
-    }
-
-    public function getType(): string
-    {
-        return $this->type;
     }
 }

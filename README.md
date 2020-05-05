@@ -36,7 +36,6 @@ php artisan vendor:publish --tag=hexagon-config
 
 ``` bash
 php artisan vendor:publish --tag=hexagon-templates
-
 ```
 
 ### Testing

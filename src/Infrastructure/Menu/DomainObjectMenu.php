@@ -2,9 +2,9 @@
 
 namespace Omatech\Hexagon\Infrastructure\Menu;
 
-use Omatech\Hexagon\Application\DomainObject\GenerateDomainObject;
-use Omatech\Hexagon\Application\DomainObject\GenerateDomainObjectInputAdapter;
-use Omatech\Hexagon\Application\DomainObject\GenerateDomainObjectOutputAdapter;
+use Omatech\Hexagon\Application\DomainObject\GenerateDomainObject\GenerateDomainObject;
+use Omatech\Hexagon\Application\DomainObject\GenerateDomainObject\GenerateDomainObjectInputAdapter;
+use Omatech\Hexagon\Application\DomainObject\GenerateDomainObject\GenerateDomainObjectOutputAdapter;
 use PhpSchool\CliMenu\CliMenu;
 //use PhpSchool\CliMenu\Action\ExitAction;
 use PhpSchool\CliMenu\Action\GoBackAction;

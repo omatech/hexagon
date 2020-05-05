@@ -2,8 +2,8 @@
 
 namespace Omatech\Hexagon\Infrastructure\Menu;
 
-use Omatech\Hexagon\Domain\Action\Exception\ActionAlreadyExistsException;
-use Omatech\Hexagon\Domain\UseCase\Exception\UseCaseAlreadyExistsException;
+use Omatech\Hexagon\Application\UseCase\Exception\UseCaseAlreadyExistsException;
+use Omatech\Hexagon\Application\Action\Exception\ActionAlreadyExistsException;
 use PhpSchool\CliMenu\Builder\CliMenuBuilder;
 use PhpSchool\CliMenu\CliMenu;
 use PhpSchool\CliMenu\MenuItem\SelectableItem;
