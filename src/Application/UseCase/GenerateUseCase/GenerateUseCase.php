@@ -2,26 +2,39 @@
 
 namespace Omatech\Hexagon\Application\UseCase\GenerateUseCase;
 
-use Omatech\Hexagon\Application\Base\Instantiatable;
-use Omatech\Hexagon\Domain\File\Interfaces\InstantiateRepository;
-use Omatech\Hexagon\Domain\UseCase\Exception\UseCaseCouldNotBeInstantiated;
+use Omatech\Hexagon\Domain\String\StringToStudlyCaseRepository;
+use Omatech\Hexagon\Domain\Template\Interfaces\GetRepository;
+use Omatech\Hexagon\Domain\Template\Interfaces\InstantiateRepository;
+use Omatech\Hexagon\Domain\Template\Interfaces\ReplaceRepository;
 
 final class GenerateUseCase
 {
-    use Instantiatable;
-
     /** @var InstantiateRepository */
     private $instantiateRepository;
+    /** @var ReplaceRepository */
+    private $replaceRepository;
+    /** @var GetRepository */
+    private $getRepository;
+    /** @var StringToStudlyCaseRepository */
+    private $stringToStudlyCaseRepository;
 
-    public function __construct(InstantiateRepository $instantiateRepository)
+    public function __construct(
+        InstantiateRepository $instantiateRepository,
+        ReplaceRepository $replaceRepository,
+        GetRepository $getRepository,
+        StringToStudlyCaseRepository $stringToStudlyCaseRepository
+    )
     {
         $this->instantiateRepository = $instantiateRepository;
+        $this->replaceRepository = $replaceRepository;
+        $this->getRepository = $getRepository;
+        $this->stringToStudlyCaseRepository = $stringToStudlyCaseRepository;
     }
 
     public function execute(GenerateUseCaseInputAdapter $request): GenerateUseCaseOutputAdapter
     {
-        $domain = $this->studlyNames($request->getDomain());
-        $useCase = $this->studlyNames($request->getUseCase());
+        $domain = $this->stringToStudlyCaseRepository->execute($request->getDomain());
+        $useCase = $this->stringToStudlyCaseRepository->execute($request->getUseCase());
 
         $path = config('hexagon.directories.application', 'app/Application/');
         $path = rtrim($path, '/') . '/';
@@ -37,10 +50,10 @@ final class GenerateUseCase
             return GenerateUseCaseOutputAdapter::ofError('File Already Exists!', 'file_already_exists');
         }
 
-        $template = $this->getTemplate('use-case');
+        $template = $this->getRepository->execute('use-case');
 
-        $template = $this->replace('Domain', $domain, $template);
-        $template = $this->replace('UseCase', $useCase, $template);
+        $template = $this->replaceRepository->execute('Domain', $domain, $template);
+        $template = $this->replaceRepository->execute('UseCase', $useCase, $template);
 
         $inputUse = null;
         $outputUse = null;
@@ -49,7 +62,7 @@ final class GenerateUseCase
             $inputAdapterFolder =  trim($inputAdapterFolder, '/') . '\\';
             $inputUse = PHP_EOL . 'use App\Application\\' . $domain . '\\' . $useCase . '\\' . $inputAdapterFolder .
                 $useCase . $inputAdapterName . ';' . PHP_EOL;
-            $template = $this->replace('InputUse', $inputUse, $template);
+            $template = $this->replaceRepository->execute('InputUse', $inputUse, $template);
         } else {
             if (!empty($outputAdapterFolder)) {
                 $inputUse = PHP_EOL;
@@ -62,10 +75,10 @@ final class GenerateUseCase
                 $useCase . $outputAdapterName . ';' . PHP_EOL;
         }
 
-        $template = $this->replace('InputName', $inputAdapterName ?? 'InputAdapter', $template);
-        $template = $this->replace('OutputName', $outputAdapterName ?? 'OutputAdapter', $template);
-        $template = $this->replace('InputUse', $inputUse ?? '', $template, false);
-        $template = $this->replace('OutputUse', $outputUse ?? '', $template, false);
+        $template = $this->replaceRepository->execute('InputName', $inputAdapterName ?? 'InputAdapter', $template);
+        $template = $this->replaceRepository->execute('OutputName', $outputAdapterName ?? 'OutputAdapter', $template);
+        $template = $this->replaceRepository->execute('InputUse', $inputUse ?? '', $template, false);
+        $template = $this->replaceRepository->execute('OutputUse', $outputUse ?? '', $template, false);
 
 //        $template = $this->clearTemplate($template);
 

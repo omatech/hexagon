@@ -1,8 +1,8 @@
 <?php
 
-namespace Omatech\Hexagon\Infrastructure\Repositories\File;
+namespace Omatech\Hexagon\Infrastructure\Repositories\Template;
 
-use Omatech\Hexagon\Domain\File\Interfaces\InstantiateRepository;
+use Omatech\Hexagon\Domain\Template\Interfaces\InstantiateRepository;
 
 class Instantiate implements InstantiateRepository
 {

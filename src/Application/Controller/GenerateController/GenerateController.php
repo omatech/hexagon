@@ -2,25 +2,39 @@
 
 namespace Omatech\Hexagon\Application\Controller\GenerateController;
 
-use Omatech\Hexagon\Application\Base\Instantiatable;
-use Omatech\Hexagon\Domain\File\Interfaces\InstantiateRepository;
+use Omatech\Hexagon\Domain\String\StringToStudlyCaseRepository;
+use Omatech\Hexagon\Domain\Template\Interfaces\GetRepository;
+use Omatech\Hexagon\Domain\Template\Interfaces\InstantiateRepository;
+use Omatech\Hexagon\Domain\Template\Interfaces\ReplaceRepository;
 
 final class GenerateController
 {
-    use Instantiatable;
-
     /** @var InstantiateRepository */
     private $instantiateRepository;
+    /** @var ReplaceRepository */
+    private $replaceRepository;
+    /** @var GetRepository */
+    private $getRepository;
+    /** @var StringToStudlyCaseRepository */
+    private $stringToStudlyCaseRepository;
 
-    public function __construct(InstantiateRepository $instantiateRepository)
+    public function __construct(
+        InstantiateRepository $instantiateRepository,
+        ReplaceRepository $replaceRepository,
+        GetRepository $getRepository,
+        StringToStudlyCaseRepository $stringToStudlyCaseRepository
+    )
     {
         $this->instantiateRepository = $instantiateRepository;
+        $this->replaceRepository = $replaceRepository;
+        $this->getRepository = $getRepository;
+        $this->stringToStudlyCaseRepository = $stringToStudlyCaseRepository;
     }
 
     public function execute(GenerateControllerInputAdapter $request): GenerateControllerOutputAdapter
     {
-        $domain = $this->studlyNames($request->getDomain());
-        $useCase = $this->studlyNames($request->getUseCase());
+        $domain = $this->stringToStudlyCaseRepository->execute($request->getDomain());
+        $useCase = $this->stringToStudlyCaseRepository->execute($request->getUseCase());
         $type = ucfirst($request->getType());
 
         $infrastructurePath = config('hexagon.directories.infrastructure', 'app/Infrastructure/');
@@ -36,7 +50,7 @@ final class GenerateController
             return GenerateControllerOutputAdapter::ofError('File Already Exists!', 'file_already_exists');
         }
 
-        $template = $this->getTemplate(strtolower($type).'-controller');
+        $template = $this->getRepository->execute(strtolower($type).'-controller');
 
         $inputName = config('hexagon.directories.input-adapter.name', 'InputAdapter') ?? 'InputAdapter';
         $outputName = config('hexagon.directories.output-adapter.name', 'OutputAdapter') ?? 'OutputAdapter';
@@ -51,14 +65,14 @@ final class GenerateController
             $outputFolder =  trim($outputFolder, '/\\') . '\\';
         }
 
-        $template = $this->replace('Domain', $domain, $template);
-        $template = $this->replace('UseCase', $useCase, $template);
-        $template = $this->replace('useCase', lcfirst($useCase), $template);
-        $template = $this->replace('Namespace', $namespace, $template);
-        $template = $this->replace('InputName', $inputName, $template);
-        $template = $this->replace('OutputName', $outputName, $template);
-        $template = $this->replace('InputFolder', $inputFolder ?? '', $template);
-        $template = $this->replace('OutputFolder', $outputFolder ?? '', $template);
+        $template = $this->replaceRepository->execute('Domain', $domain, $template);
+        $template = $this->replaceRepository->execute('UseCase', $useCase, $template);
+        $template = $this->replaceRepository->execute('useCase', lcfirst($useCase), $template);
+        $template = $this->replaceRepository->execute('Namespace', $namespace, $template);
+        $template = $this->replaceRepository->execute('InputName', $inputName, $template);
+        $template = $this->replaceRepository->execute('OutputName', $outputName, $template);
+        $template = $this->replaceRepository->execute('InputFolder', $inputFolder ?? '', $template);
+        $template = $this->replaceRepository->execute('OutputFolder', $outputFolder ?? '', $template);
 //        $template = $this->clearTemplate($template);
 
         try {

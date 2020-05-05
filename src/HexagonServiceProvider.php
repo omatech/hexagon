@@ -3,10 +3,12 @@
 namespace Omatech\Hexagon;
 
 use Illuminate\Support\ServiceProvider;
-use Omatech\Hexagon\Domain\File\Interfaces\InstantiateRepository;
+use Omatech\Hexagon\Domain\Template\Interfaces\InstantiateRepository;
+use Omatech\Hexagon\Domain\Template\Interfaces\ReplaceRepository;
 use Omatech\Hexagon\Infrastructure\Commands\HexagonalCLI;
 use Omatech\Hexagon\Infrastructure\Commands\HexagonalCLI2;
-use Omatech\Hexagon\Infrastructure\Repositories\File\Instantiate;
+use Omatech\Hexagon\Infrastructure\Repositories\Template\Instantiate;
+use Omatech\Hexagon\Infrastructure\Repositories\Template\Replace;
 
 class HexagonServiceProvider extends ServiceProvider
 {
@@ -34,6 +36,11 @@ class HexagonServiceProvider extends ServiceProvider
         $this->app->bind(
             InstantiateRepository::class,
             Instantiate::class
+        );
+
+        $this->app->bind(
+            ReplaceRepository::class,
+            Replace::class
         );
     }
 

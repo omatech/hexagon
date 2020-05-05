@@ -1,12 +1,12 @@
 <?php
 
-namespace Omatech\Hexagon\Application\Base;
+namespace Omatech\Hexagon\Infrastructure\Repositories\Template;
 
-use Illuminate\Support\Str;
+use Omatech\Hexagon\Domain\Template\Interfaces\GetRepository;
 
-trait Instantiatable
+class Get implements GetRepository
 {
-    protected function getTemplate($template)
+    public function execute(string $template): string
     {
         $path = $this->getTemplatePath($template);
 
@@ -33,28 +33,5 @@ trait Instantiatable
         }
 
         return base_path('vendor/omatech/hexagon/resources/templates/' . $template . '.stub');
-    }
-
-    protected function replace(string $variable, string $value, string $template, $caps = true): string
-    {
-        if ($caps) {
-            $value = ucfirst($value);
-        }
-
-        return str_replace('${' . $variable . '}', $value, $template);
-    }
-
-//    protected function clearTemplate($template)
-//    {
-//        return preg_replace(["/\${(.*)}/"], '', $template);
-//    }
-
-    private function studlyNames(string $name): string
-    {
-        $name = preg_replace(["/[^a-zA-Z\d]/", '/__+/'], ' ', $name);
-        $name = ucwords($name);
-        $name = str_replace(' ', '', $name);
-
-        return Str::studly($name);
     }
 }

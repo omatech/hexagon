@@ -1,6 +1,6 @@
 <?php
 
-namespace Omatech\Hexagon\Domain\File\Interfaces;
+namespace Omatech\Hexagon\Domain\Template\Interfaces;
 
 interface InstantiateRepository
 {
