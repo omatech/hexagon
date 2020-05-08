@@ -3,6 +3,7 @@
 namespace Omatech\Hexagon\Infrastructure\Repositories\String;
 
 use Omatech\Hexagon\Domain\String\StringToStudlyCaseRepository;
+use Illuminate\Support\Str;
 
 class StringToStudlyCase implements StringToStudlyCaseRepository
 {

@@ -3,16 +3,13 @@
 namespace Omatech\Hexagon\Application\Controller\GenerateController;
 
 use Omatech\Hexagon\Domain\String\StringToStudlyCaseRepository;
-use Omatech\Hexagon\Domain\Template\Interfaces\GetRepository;
-use Omatech\Hexagon\Domain\Template\Interfaces\InstantiateRepository;
-use Omatech\Hexagon\Domain\Template\Interfaces\ReplaceRepository;
+use Omatech\Hexagon\Domain\Template\GetRepository;
+use Omatech\Hexagon\Domain\Template\InstantiateRepository;
 
 final class GenerateController
 {
     /** @var InstantiateRepository */
     private $instantiateRepository;
-    /** @var ReplaceRepository */
-    private $replaceRepository;
     /** @var GetRepository */
     private $getRepository;
     /** @var StringToStudlyCaseRepository */
@@ -20,13 +17,11 @@ final class GenerateController
 
     public function __construct(
         InstantiateRepository $instantiateRepository,
-        ReplaceRepository $replaceRepository,
         GetRepository $getRepository,
         StringToStudlyCaseRepository $stringToStudlyCaseRepository
     )
     {
         $this->instantiateRepository = $instantiateRepository;
-        $this->replaceRepository = $replaceRepository;
         $this->getRepository = $getRepository;
         $this->stringToStudlyCaseRepository = $stringToStudlyCaseRepository;
     }
@@ -65,18 +60,18 @@ final class GenerateController
             $outputFolder =  trim($outputFolder, '/\\') . '\\';
         }
 
-        $template = $this->replaceRepository->execute('Domain', $domain, $template);
-        $template = $this->replaceRepository->execute('UseCase', $useCase, $template);
-        $template = $this->replaceRepository->execute('useCase', lcfirst($useCase), $template);
-        $template = $this->replaceRepository->execute('Namespace', $namespace, $template);
-        $template = $this->replaceRepository->execute('InputName', $inputName, $template);
-        $template = $this->replaceRepository->execute('OutputName', $outputName, $template);
-        $template = $this->replaceRepository->execute('InputFolder', $inputFolder ?? '', $template);
-        $template = $this->replaceRepository->execute('OutputFolder', $outputFolder ?? '', $template);
+        $template->replace('Domain', $domain);
+        $template->replace('UseCase', $useCase);
+        $template->replace('useCase', lcfirst($useCase));
+        $template->replace('Namespace', $namespace);
+        $template->replace('InputName', $inputName);
+        $template->replace('OutputName', $outputName);
+        $template->replace('InputFolder', $inputFolder ?? '');
+        $template->replace('OutputFolder', $outputFolder ?? '');
 //        $template = $this->clearTemplate($template);
 
         try {
-            $this->instantiateRepository->execute($template, $path, $file);
+            $this->instantiateRepository->execute($template->getContent(), $path, $file);
         } catch (\Exception $e) {
             return GenerateControllerOutputadapter::ofError($e->getMessage());
         }

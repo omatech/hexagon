@@ -3,16 +3,13 @@
 namespace Omatech\Hexagon\Application\ActionRepository\GenerateActionRepository;
 
 use Omatech\Hexagon\Domain\String\StringToStudlyCaseRepository;
-use Omatech\Hexagon\Domain\Template\Interfaces\GetRepository;
-use Omatech\Hexagon\Domain\Template\Interfaces\InstantiateRepository;
-use Omatech\Hexagon\Domain\Template\Interfaces\ReplaceRepository;
+use Omatech\Hexagon\Domain\Template\GetRepository;
+use Omatech\Hexagon\Domain\Template\InstantiateRepository;
 
 final class GenerateActionRepository
 {
     /** @var InstantiateRepository */
     private $instantiateRepository;
-    /*** @var ReplaceRepository */
-    private $replaceRepository;
     /** @var GetRepository */
     private $getRepository;
     /** @var StringToStudlyCaseRepository */
@@ -20,13 +17,11 @@ final class GenerateActionRepository
 
     public function __construct(
         InstantiateRepository $instantiateRepository,
-        ReplaceRepository $replaceRepository,
         GetRepository $getRepository,
         StringToStudlyCaseRepository $stringToStudlyCaseRepository
     )
     {
         $this->instantiateRepository = $instantiateRepository;
-        $this->replaceRepository = $replaceRepository;
         $this->getRepository = $getRepository;
         $this->stringToStudlyCaseRepository = $stringToStudlyCaseRepository;
     }
@@ -48,16 +43,16 @@ final class GenerateActionRepository
 
         $template = $this->getRepository->execute('action-repository');
 
-        $template = $this->replaceRepository->execute('Domain', $domain, $template);
-        $template = $this->replaceRepository->execute('Action', $action, $template);
+        $template->replace('Domain', $domain);
+        $template->replace('Action', $action);
 //        $template = $this->clearTemplate($template);
 
         try {
-            $this->instantiateRepository->execute($template, $path, $file);
+            $this->instantiateRepository->execute($template->getContent(), $path, $file);
         } catch (\Exception $e) {
             return GenerateActionRepositoryOutputAdapter::ofError($e->getMessage());
         }
 
-        return GenerateActionRepositoryOutputAdapter::ofSuccess();
+        return GenerateActionRepositoryOutputAdapter::ofSuccess($action . 'Repository');
     }
 }

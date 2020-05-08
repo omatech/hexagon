@@ -8,15 +8,17 @@ return [
      * Defines the location of files and to save and templates
      */
     'directories' => [
-        'templates' => 'vendor/omatech/hexagon/templates/',
-        'templates_default' => 'vendor/omatech/hexagon/resources/templates/',
+        'action' => 'app/Infrastructure/Repositories/',
         'application' => 'app/Application/',
-        'domain' => 'app/Domain',
+        'domain' => 'app/Domain/',
         'infrastructure' => 'app/Infrastructure/',
         'input-adapter' => [
             'name' => 'InputAdapter',  // added to the use case name to generate file name
             'folder' => '' // location of the input adapter inside use case directory, defaults to use case directory
         ],
+        'service-providers' => 'app/Providers',
+        'templates' => 'vendor/omatech/hexagon/templates/',
+        'templates_default' => 'vendor/omatech/hexagon/resources/templates/',
         'output-adapter' => [
             'name' => 'OutputAdapter', // added to the use case name to generate file name
             'folder' => '' // location of the output adapter inside use case directory, defaults to use case directory

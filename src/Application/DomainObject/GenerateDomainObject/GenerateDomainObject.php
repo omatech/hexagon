@@ -3,16 +3,13 @@
 namespace Omatech\Hexagon\Application\DomainObject\GenerateDomainObject;
 
 use Omatech\Hexagon\Domain\String\StringToStudlyCaseRepository;
-use Omatech\Hexagon\Domain\Template\Interfaces\GetRepository;
-use Omatech\Hexagon\Domain\Template\Interfaces\InstantiateRepository;
-use Omatech\Hexagon\Domain\Template\Interfaces\ReplaceRepository;
+use Omatech\Hexagon\Domain\Template\GetRepository;
+use Omatech\Hexagon\Domain\Template\InstantiateRepository;
 
 final class GenerateDomainObject
 {
     /** @var InstantiateRepository */
     private $instantiateRepository;
-    /** @var ReplaceRepository */
-    private $replaceRepository;
     /** @var GetRepository */
     private $getRepository;
     /** @var StringToStudlyCaseRepository */
@@ -20,13 +17,11 @@ final class GenerateDomainObject
 
     public function __construct(
         InstantiateRepository $instantiateRepository,
-        ReplaceRepository $replaceRepository,
         GetRepository $getRepository,
         StringToStudlyCaseRepository $stringToStudlyCaseRepository
     )
     {
         $this->instantiateRepository = $instantiateRepository;
-        $this->replaceRepository = $replaceRepository;
         $this->getRepository = $getRepository;
         $this->stringToStudlyCaseRepository = $stringToStudlyCaseRepository;
     }
@@ -46,11 +41,11 @@ final class GenerateDomainObject
 
         $template = $this->getRepository->execute('domain-object');
 
-        $template = $this->replaceRepository->execute('Domain', $domain, $template);
+        $template->replace('Domain', $domain);
 //        $template = $this->clearTemplate($template);
 
         try {
-            $this->instantiateRepository->execute($template, $path, $file);
+            $this->instantiateRepository->execute($template->getContent(), $path, $file);
         } catch (\Exception $e) {
             return GenerateDomainObjectOutputAdapter::ofError($e->getMessage());
         }

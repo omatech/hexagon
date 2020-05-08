@@ -6,11 +6,12 @@ use Illuminate\Http\JsonResponse;
 
 final class GenerateActionOutputAdapter extends JsonResponse
 {
-    public static function ofSuccess(): GenerateActionOutputAdapter
+    public static function ofSuccess(string $class): GenerateActionOutputAdapter
     {
         return self::create([
             'code' => 'success',
-            'message' => 'Action created Successfully!'
+            'message' => 'Action created Successfully!',
+            'class' => $class
         ], 200);
     }
 

@@ -3,12 +3,17 @@
 namespace Omatech\Hexagon;
 
 use Illuminate\Support\ServiceProvider;
-use Omatech\Hexagon\Domain\Template\Interfaces\InstantiateRepository;
-use Omatech\Hexagon\Domain\Template\Interfaces\ReplaceRepository;
+use Omatech\Hexagon\Domain\File\WriteFileRepository;
+use Omatech\Hexagon\Domain\ServiceProvider\GetServiceProviderRepository;
+use Omatech\Hexagon\Domain\String\StringToStudlyCaseRepository;
+use Omatech\Hexagon\Domain\Template\GetRepository;
+use Omatech\Hexagon\Domain\Template\InstantiateRepository;
 use Omatech\Hexagon\Infrastructure\Commands\HexagonalCLI;
-use Omatech\Hexagon\Infrastructure\Commands\HexagonalCLI2;
+use Omatech\Hexagon\Infrastructure\Repositories\File\WriteFile;
+use Omatech\Hexagon\Infrastructure\Repositories\ServiceProvider\GetServiceProvider;
+use Omatech\Hexagon\Infrastructure\Repositories\String\StringToStudlyCase;
+use Omatech\Hexagon\Infrastructure\Repositories\Template\Get;
 use Omatech\Hexagon\Infrastructure\Repositories\Template\Instantiate;
-use Omatech\Hexagon\Infrastructure\Repositories\Template\Replace;
 
 class HexagonServiceProvider extends ServiceProvider
 {
@@ -33,15 +38,7 @@ class HexagonServiceProvider extends ServiceProvider
              ]);
         }
 
-        $this->app->bind(
-            InstantiateRepository::class,
-            Instantiate::class
-        );
-
-        $this->app->bind(
-            ReplaceRepository::class,
-            Replace::class
-        );
+        $this->bindRepositories();
     }
 
     /**
@@ -50,5 +47,33 @@ class HexagonServiceProvider extends ServiceProvider
     public function register()
     {
 
+    }
+
+    private function bindRepositories()
+    {
+        $this->app->bind(
+            InstantiateRepository::class,
+            Instantiate::class
+        );
+
+        $this->app->bind(
+            GetRepository::class,
+            Get::class
+        );
+
+        $this->app->bind(
+            StringToStudlyCaseRepository::class,
+            StringToStudlyCase::class
+        );
+
+        $this->app->bind(
+            GetServiceProviderRepository::class,
+            GetServiceProvider::class
+        );
+
+        $this->app->bind(
+            WriteFileRepository::class,
+            WriteFile::class
+        );
     }
 }

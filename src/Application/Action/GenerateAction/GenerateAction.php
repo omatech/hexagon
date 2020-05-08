@@ -3,16 +3,13 @@
 namespace Omatech\Hexagon\Application\Action\GenerateAction;
 
 use Omatech\Hexagon\Domain\String\StringToStudlyCaseRepository;
-use Omatech\Hexagon\Domain\Template\Interfaces\GetRepository;
-use Omatech\Hexagon\Domain\Template\Interfaces\InstantiateRepository;
-use Omatech\Hexagon\Domain\Template\Interfaces\ReplaceRepository;
+use Omatech\Hexagon\Domain\Template\GetRepository;
+use Omatech\Hexagon\Domain\Template\InstantiateRepository;
 
 final class GenerateAction
 {
     /** @var InstantiateRepository */
     private $instantiateRepository;
-    /** @var ReplaceRepository */
-    private $replaceRepository;
     /** @var GetRepository */
     private $getRepository;
     /** @var StringToStudlyCaseRepository */
@@ -20,13 +17,11 @@ final class GenerateAction
 
     public function __construct(
         InstantiateRepository $instantiateRepository,
-        ReplaceRepository $replaceRepository,
         GetRepository $getRepository,
         StringToStudlyCaseRepository $stringToStudlyCaseRepository
     )
     {
         $this->instantiateRepository = $instantiateRepository;
-        $this->replaceRepository = $replaceRepository;
         $this->getRepository = $getRepository;
         $this->stringToStudlyCaseRepository = $stringToStudlyCaseRepository;
     }
@@ -36,8 +31,8 @@ final class GenerateAction
         $domain = $this->stringToStudlyCaseRepository->execute($request->getDomain());
         $action = $this->stringToStudlyCaseRepository->execute($request->getAction());
 
-        $path = config('hexagon.directories.action', 'app/Infrastructure/');
-        $path = base_path($path) . $domain;
+        $actionPath = config('hexagon.directories.action', 'app/Infrastructure/Repositories/');
+        $path = base_path($actionPath) . $domain;
 
         $file = $action . '.php';
 
@@ -47,16 +42,19 @@ final class GenerateAction
 
         $template = $this->getRepository->execute('action');
 
-        $template = $this->replaceRepository->execute('Domain', $domain, $template);
-        $template = $this->replaceRepository->execute('Action', $action, $template);
+        $namespaceRoute = str_replace('/', '\\', $actionPath);
+
+        $template->replace('Domain', $domain);
+        $template->replace('Action', $action);
+        $template->replace('NamespaceRoute', $namespaceRoute);
 //        $template = $this->clearTemplate($template);
 
         try {
-            $this->instantiateRepository->execute($template, $path, $file);
+            $this->instantiateRepository->execute($template->getContent(), $path, $file);
         } catch (\Exception $e) {
             return GenerateActionOutputAdapter::ofError($e->getMessage());
         }
 
-        return GenerateActionOutputAdapter::ofSuccess();
+        return GenerateActionOutputAdapter::ofSuccess($action);
     }
 }

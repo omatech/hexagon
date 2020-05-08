@@ -2,15 +2,16 @@
 
 namespace Omatech\Hexagon\Infrastructure\Repositories\Template;
 
-use Omatech\Hexagon\Domain\Template\Interfaces\GetRepository;
+use Omatech\Hexagon\Domain\Template\GetRepository;
+use Omatech\Hexagon\Domain\Template\Template;
 
 class Get implements GetRepository
 {
-    public function execute(string $template): string
+    public function execute(string $template): Template
     {
         $path = $this->getTemplatePath($template);
 
-        return file_get_contents($path);
+        return new Template(file_get_contents($path));
     }
 
     protected function getTemplatePath($template): string

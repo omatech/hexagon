@@ -5,6 +5,9 @@ namespace Omatech\Hexagon\Infrastructure\Menu;
 use Omatech\Hexagon\Application\Action\GenerateAction\GenerateAction;
 use Omatech\Hexagon\Application\Action\GenerateAction\GenerateActionInputAdapter;
 use Omatech\Hexagon\Application\Action\GenerateAction\GenerateActionOutputAdapter;
+use Omatech\Hexagon\Application\ActionRepository\BindRepository\BindRepository;
+use Omatech\Hexagon\Application\ActionRepository\BindRepository\BindRepositoryInputAdapter;
+use Omatech\Hexagon\Application\ActionRepository\BindRepository\BindRepositoryOutputAdapter;
 use Omatech\Hexagon\Application\ActionRepository\GenerateActionRepository\GenerateActionRepository;
 use Omatech\Hexagon\Application\ActionRepository\GenerateActionRepository\GenerateActionRepositoryInputAdapter;
 use Omatech\Hexagon\Application\ActionRepository\GenerateActionRepository\GenerateActionRepositoryOutputAdapter;
@@ -29,14 +32,18 @@ class ActionMenu extends Menu
     private $domain;
     /** @var string */
     private $action;
+    /** @var BindRepository */
+    private $bindRepository;
 
     public function __construct(
         GenerateAction $generateAction,
-        GenerateActionRepository $generateActionRepository
+        GenerateActionRepository $generateActionRepository,
+        BindRepository $bindRepository
     )
     {
         $this->generateAction = $generateAction;
         $this->generateActionRepository = $generateActionRepository;
+        $this->bindRepository = $bindRepository;
     }
 
     public function show(CliMenu $parentMenu)
@@ -124,14 +131,31 @@ class ActionMenu extends Menu
 
         // Generate Action Repository
         /** @var GenerateActionRepositoryOutputAdapter $actionOutputAdapter */
-        $actionOutputAdapter = $this->generateActionRepository->execute(
+        $actionRepositoryOutputAdapter = $this->generateActionRepository->execute(
             new GenerateActionRepositoryInputAdapter($this->domain, $this->action, $overwrite)
         );
 
-        // TODO: BindRepository
+        if ($actionRepositoryOutputAdapter->getStatusCode() != 200) {
+            $menu->confirm($actionRepositoryOutputAdapter->getOriginalContent()['message']);
+        }
 
-        if ($actionOutputAdapter->getStatusCode() != 200) {
-            $menu->confirm($actionOutputAdapter->getOriginalContent()['message']);
+        $interface = $actionRepositoryOutputAdapter->getOriginalContent()['class'] ?? null;
+        $instance = $actionOutputAdapter->getOriginalContent()['class'] ?? null;
+
+        if (!empty($interface) && !empty($instance)) {
+            // TODO: BindRepository
+            /** @var BindRepositoryOutputAdapter */
+            $bindRepository = $this->bindRepository->execute(
+                new BindRepositoryInputAdapter(
+                    $this->domain,
+                    $instance,
+                    $interface
+                )
+            );
+        }
+
+        if ($bindRepository->getStatusCode() != 200) {
+            $menu->confirm($bindRepository->getOriginalContent()['message']);
         }
 
         $this->domain = null;

@@ -2,7 +2,7 @@
 
 namespace Omatech\Hexagon\Infrastructure\Repositories\Template;
 
-use Omatech\Hexagon\Domain\Template\Interfaces\InstantiateRepository;
+use Omatech\Hexagon\Domain\Template\InstantiateRepository;
 
 class Instantiate implements InstantiateRepository
 {

@@ -3,16 +3,13 @@
 namespace Omatech\Hexagon\Application\OutputAdapter\GenerateOutputAdapter;
 
 use Omatech\Hexagon\Domain\String\StringToStudlyCaseRepository;
-use Omatech\Hexagon\Domain\Template\Interfaces\GetRepository;
-use Omatech\Hexagon\Domain\Template\Interfaces\InstantiateRepository;
-use Omatech\Hexagon\Domain\Template\Interfaces\ReplaceRepository;
+use Omatech\Hexagon\Domain\Template\GetRepository;
+use Omatech\Hexagon\Domain\Template\InstantiateRepository;
 
 final class GenerateOutputAdapter
 {
     /** @var InstantiateRepository */
     private $instantiateRepository;
-    /** @var ReplaceRepository */
-    private $replaceRepository;
     /** @var GetRepository */
     private $getRepository;
     /** @var StringToStudlyCaseRepository */
@@ -20,13 +17,11 @@ final class GenerateOutputAdapter
 
     public function __construct(
         InstantiateRepository $instantiateRepository,
-        ReplaceRepository $replaceRepository,
         GetRepository $getRepository,
         StringToStudlyCaseRepository $stringToStudlyCaseRepository
     )
     {
         $this->instantiateRepository = $instantiateRepository;
-        $this->replaceRepository = $replaceRepository;
         $this->getRepository = $getRepository;
         $this->stringToStudlyCaseRepository = $stringToStudlyCaseRepository;
     }
@@ -61,14 +56,14 @@ final class GenerateOutputAdapter
                 $folder = '\\' . $folder;
             }
 
-            $template = $this->replaceRepository->execute('Domain', $domain, $template);
-            $template = $this->replaceRepository->execute('UseCase', $useCase, $template);
-            $template = $this->replaceRepository->execute('useCase', lcfirst($useCase), $template);
-            $template = $this->replaceRepository->execute('Folder', $folder ?? '', $template);
-            $template = $this->replaceRepository->execute('Name', $name, $template);
+            $template->replace('Domain', $domain);
+            $template->replace('UseCase', $useCase);
+            $template->replace('useCase', lcfirst($useCase));
+            $template->replace('Folder', $folder ?? '');
+            $template->replace('Name', $name);
     //        $template = $this->clearTemplate($template);
 
-            $this->instantiateRepository->execute($template, $path, $file);
+            $this->instantiateRepository->execute($template->getContent(), $path, $file);
 
         } catch (\Exception $e) {
             return GenerateOutputAdapterOutputAdapter::ofError($e->getMessage());

@@ -3,16 +3,13 @@
 namespace Omatech\Hexagon\Application\UseCase\GenerateUseCase;
 
 use Omatech\Hexagon\Domain\String\StringToStudlyCaseRepository;
-use Omatech\Hexagon\Domain\Template\Interfaces\GetRepository;
-use Omatech\Hexagon\Domain\Template\Interfaces\InstantiateRepository;
-use Omatech\Hexagon\Domain\Template\Interfaces\ReplaceRepository;
+use Omatech\Hexagon\Domain\Template\GetRepository;
+use Omatech\Hexagon\Domain\Template\InstantiateRepository;
 
 final class GenerateUseCase
 {
     /** @var InstantiateRepository */
     private $instantiateRepository;
-    /** @var ReplaceRepository */
-    private $replaceRepository;
     /** @var GetRepository */
     private $getRepository;
     /** @var StringToStudlyCaseRepository */
@@ -20,13 +17,11 @@ final class GenerateUseCase
 
     public function __construct(
         InstantiateRepository $instantiateRepository,
-        ReplaceRepository $replaceRepository,
         GetRepository $getRepository,
         StringToStudlyCaseRepository $stringToStudlyCaseRepository
     )
     {
         $this->instantiateRepository = $instantiateRepository;
-        $this->replaceRepository = $replaceRepository;
         $this->getRepository = $getRepository;
         $this->stringToStudlyCaseRepository = $stringToStudlyCaseRepository;
     }
@@ -52,8 +47,8 @@ final class GenerateUseCase
 
         $template = $this->getRepository->execute('use-case');
 
-        $template = $this->replaceRepository->execute('Domain', $domain, $template);
-        $template = $this->replaceRepository->execute('UseCase', $useCase, $template);
+        $template->replace('Domain', $domain);
+        $template->replace('UseCase', $useCase);
 
         $inputUse = null;
         $outputUse = null;
@@ -62,7 +57,7 @@ final class GenerateUseCase
             $inputAdapterFolder =  trim($inputAdapterFolder, '/') . '\\';
             $inputUse = PHP_EOL . 'use App\Application\\' . $domain . '\\' . $useCase . '\\' . $inputAdapterFolder .
                 $useCase . $inputAdapterName . ';' . PHP_EOL;
-            $template = $this->replaceRepository->execute('InputUse', $inputUse, $template);
+            $template->replace('InputUse', $inputUse);
         } else {
             if (!empty($outputAdapterFolder)) {
                 $inputUse = PHP_EOL;
@@ -75,15 +70,15 @@ final class GenerateUseCase
                 $useCase . $outputAdapterName . ';' . PHP_EOL;
         }
 
-        $template = $this->replaceRepository->execute('InputName', $inputAdapterName ?? 'InputAdapter', $template);
-        $template = $this->replaceRepository->execute('OutputName', $outputAdapterName ?? 'OutputAdapter', $template);
-        $template = $this->replaceRepository->execute('InputUse', $inputUse ?? '', $template, false);
-        $template = $this->replaceRepository->execute('OutputUse', $outputUse ?? '', $template, false);
+        $template->replace('InputName', $inputAdapterName ?? 'InputAdapter');
+        $template->replace('OutputName', $outputAdapterName ?? 'OutputAdapter');
+        $template->replace('InputUse', $inputUse ?? '', false);
+        $template->replace('OutputUse', $outputUse ?? '', false);
 
 //        $template = $this->clearTemplate($template);
 
         try {
-            $this->instantiateRepository->execute($template, $path, $file);
+            $this->instantiateRepository->execute($template->getContent(), $path, $file);
         } catch (\Exception $e) {
             return GenerateUseCaseOutputAdapter::ofError($e->getMessage());
         }
