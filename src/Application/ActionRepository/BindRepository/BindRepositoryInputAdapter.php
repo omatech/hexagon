@@ -10,12 +10,15 @@ final class BindRepositoryInputAdapter
     private $action;
     /** @var string */
     private $repository;
+    /** @var string */
+    private $boundary;
 
-    public function __construct(string $domain, string $action, string $repository)
+    public function __construct(string $domain, string $action, string $repository, string $boundary = null)
     {
         $this->domain = $domain;
         $this->action = $action;
         $this->repository = $repository;
+        $this->boundary = $boundary;
     }
 
     public function getDomain(): string
@@ -31,5 +34,10 @@ final class BindRepositoryInputAdapter
     public function getRepository(): string
     {
         return $this->repository;
+    }
+
+    public function getBoundary(): ?string
+    {
+        return $this->boundary;
     }
 }

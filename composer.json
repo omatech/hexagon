@@ -18,7 +18,7 @@
     "require": {
         "php": "^7.1",
         "illuminate/support": ">6.0",
-        "php-school/cli-menu": "dev-master"
+        "php-school/cli-menu": "^4.0"
     },
     "require-dev": {
         "orchestra/testbench": "^4.0",

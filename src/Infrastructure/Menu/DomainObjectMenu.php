@@ -2,9 +2,9 @@
 
 namespace Omatech\Hexagon\Infrastructure\Menu;
 
-use Omatech\Hexagon\Application\DomainObject\GenerateDomainObject\GenerateDomainObject;
-use Omatech\Hexagon\Application\DomainObject\GenerateDomainObject\GenerateDomainObjectInputAdapter;
-use Omatech\Hexagon\Application\DomainObject\GenerateDomainObject\GenerateDomainObjectOutputAdapter;
+use Omatech\Hexagon\Application\File\GenerateFile\GenerateFile;
+use Omatech\Hexagon\Application\File\GenerateFile\GenerateFileInputAdapter;
+use Omatech\Hexagon\Application\File\GenerateFile\GenerateFileOutputAdapter;
 use PhpSchool\CliMenu\CliMenu;
 //use PhpSchool\CliMenu\Action\ExitAction;
 use PhpSchool\CliMenu\Action\GoBackAction;
@@ -16,15 +16,17 @@ use PhpSchool\CliMenu\MenuStyle;
 
 class DomainObjectMenu extends Menu
 {
-    /** @var GenerateDomainObject */
-    private $generateDomainObject;
+    /** @var GenerateFile */
+    private $generateFile;
+    /** @var string */
+    private $domain;
 
-    public function __construct(GenerateDomainObject $generateDomainObject)
+    public function __construct(GenerateFile $generateFile)
     {
-        $this->generateDomainObject = $generateDomainObject;
+        $this->generateFile = $generateFile;
     }
 
-    public function show(CliMenu $parentMenu)
+    public function show(CliMenu $parentMenu, string $boundary = null)
     {
         $parentMenu->closeThis();
 
@@ -32,14 +34,14 @@ class DomainObjectMenu extends Menu
 
         $subMenu->setParent($parentMenu);
 
-        $domainList = $this->getDomainList();
+        $domainList = $this->getDomainList($boundary);
 
         foreach ($domainList as $domainItem) {
-            $subMenu->addItem(new SelectableItem($domainItem, function(CliMenu $menu) use (&$message)
+            $subMenu->addItem(new SelectableItem($domainItem, function(CliMenu $menu) use (&$message, $boundary)
             {
                 $this->domain = $menu->getSelectedItem()->getText();
 
-                $message = $this->generateDomainObject($menu);
+                $message = $this->generateDomainObject($menu, $boundary);
 
                 $style = (new MenuStyle($menu->getTerminal()))
                     ->setBg('blue')
@@ -49,14 +51,14 @@ class DomainObjectMenu extends Menu
                 $flash->display();
 
                 $menu->closeThis();
-            }, false, true));
+            }));
         }
 
-        $subMenu->addItem(new SelectableItem('New Domain', function(CliMenu $menu) use (&$message)
+        $subMenu->addItem(new SelectableItem('New Domain', function(CliMenu $menu) use (&$message, $boundary)
         {
             $this->domain = $this->prompt('domain', $menu);
 
-            $message = $this->generateDomainObject($menu);
+            $message = $this->generateDomainObject($menu, $boundary);
 
             $style = (new MenuStyle($menu->getTerminal()))
                 ->setBg('black')
@@ -79,13 +81,22 @@ class DomainObjectMenu extends Menu
         $this->domain = null;
     }
 
-    private function generateDomainObject(CliMenu $menu): string
+    private function generateDomainObject(CliMenu $menu, string $boundary = null): string
     {
         // Generate Domain Object
 
-        /** @var  GenerateDomainObjectOutputAdapter $generateDomainObjectOutputAdapter */
-        $generateDomainObjectOutputAdapter = $this->generateDomainObject->execute(new GenerateDomainObjectInputAdapter($this->domain));
+        /** @var  GenerateFileOutputAdapter $generateFileOutputAdapter */
+        $generateFileOutputAdapter = $this->generateFile->execute(
+            new GenerateFileInputAdapter(
+                $this->domain,
+                'domain-object',
+                'domain',
+                $this->domain,
+                true,
+                $boundary ?? ''
+            )
+        );
 
-        return $generateDomainObjectOutputAdapter->getOriginalContent()['message'];
+        return $generateFileOutputAdapter->getOriginalContent()['message'];
     }
 }

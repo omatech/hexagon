@@ -5,6 +5,9 @@ namespace Omatech\Hexagon\Infrastructure\Menu;
 use Omatech\Hexagon\Application\Controller\GenerateController\GenerateController;
 use Omatech\Hexagon\Application\Controller\GenerateController\GenerateControllerInputAdapter;
 use Omatech\Hexagon\Application\Controller\GenerateController\GenerateControllerOutputAdapter;
+use Omatech\Hexagon\Application\File\GenerateFile\GenerateFile;
+use Omatech\Hexagon\Application\File\GenerateFile\GenerateFileInputAdapter;
+use Omatech\Hexagon\Application\File\GenerateFile\GenerateFileOutputAdapter;
 use Omatech\Hexagon\Application\InputAdapter\GenerateInputAdapter\GenerateInputAdapter;
 use Omatech\Hexagon\Application\InputAdapter\GenerateInputAdapter\GenerateInputAdapterInputAdapter;
 use Omatech\Hexagon\Application\InputAdapter\GenerateInputAdapter\GenerateInputAdapterOutputAdapter;
@@ -15,46 +18,31 @@ use Omatech\Hexagon\Application\UseCase\GenerateUseCase\GenerateUseCase;
 use Omatech\Hexagon\Application\UseCase\GenerateUseCase\GenerateUseCaseInputAdapter;
 use Omatech\Hexagon\Application\UseCase\GenerateUseCase\GenerateUseCaseOutputAdapter;
 use Omatech\Hexagon\Domain\Base\Exceptions\DirectoryDoesNotExistException;
-use Omatech\Hexagon\Domain\UseCase\Exception\UseCaseAlreadyExistsException;
 use PhpSchool\CliMenu\CliMenu;
-//use PhpSchool\CliMenu\Action\ExitAction;
 use PhpSchool\CliMenu\Action\GoBackAction;
 use PhpSchool\CliMenu\Builder\CliMenuBuilder;
 use PhpSchool\CliMenu\Dialogue\Flash;
 use PhpSchool\CliMenu\MenuItem\SelectableItem;
 use PhpSchool\CliMenu\MenuItem\LineBreakItem;
 use PhpSchool\CliMenu\MenuStyle;
+use Illuminate\Support\Str;
 
 class UseCaseMenu extends Menu
 {
-    /** @var GenerateController */
-    private $generateController;
-    /** @var GenerateInputAdapter */
-    private $generateInputAdapter;
-    /** @var GenerateOutputAdapter */
-    private $generateOutputAdapter;
-    /** @var GenerateUseCase */
-    private $generateUseCase;
     /** @var string */
     private $domain;
     /** @var string */
     private $useCase;
+    /** @var GenerateFile */
+    private $generateFile;
 
 
-    public function __construct(
-        GenerateController $generateController,
-        GenerateInputAdapter $generateInputAdapter,
-        GenerateOutputAdapter $generateOutputAdapter,
-        GenerateUseCase $generateUseCase
-    )
+    public function __construct(GenerateFile $generateFile)
     {
-        $this->generateController = $generateController;
-        $this->generateInputAdapter = $generateInputAdapter;
-        $this->generateOutputAdapter = $generateOutputAdapter;
-        $this->generateUseCase = $generateUseCase;
+        $this->generateFile = $generateFile;
     }
 
-    public function show(CliMenu $parentMenu)
+    public function show(CliMenu $parentMenu, string $boundary = null)
     {
         $parentMenu->closeThis();
 
@@ -63,16 +51,16 @@ class UseCaseMenu extends Menu
         $subMenu->setParent($parentMenu);
 
         try {
-            $domainList = $this->getDomainList('Application');
+            $domainList = $this->getDomainList($boundary);
         } catch (\Exception $e) {
 
         }
 
         foreach ($domainList as $domainItem) {
-            $subMenu->addItem(new SelectableItem($domainItem, function(CliMenu $menu) {
+            $subMenu->addItem(new SelectableItem($domainItem, function(CliMenu $menu) use ($boundary) {
                 $this->domain = $menu->getSelectedItem()->getText();
 
-                $message = $this->generateUseCase($menu);
+                $message = $this->generateUseCase($menu, $boundary);
 
                 $style = (new MenuStyle($menu->getTerminal()))
                     ->setBg('blue')
@@ -85,9 +73,9 @@ class UseCaseMenu extends Menu
             }));
         }
 
-        $subMenu->addItem(new SelectableItem('New Domain', function(CliMenu $menu) {
+        $subMenu->addItem(new SelectableItem('New Domain', function(CliMenu $menu) use ($boundary){
 
-            $message = $this->generateUseCase($menu);
+            $message = $this->generateUseCase($menu, $boundary);
 
             $style = (new MenuStyle($menu->getTerminal()))
                 ->setBg('black')
@@ -102,14 +90,13 @@ class UseCaseMenu extends Menu
 
         $subMenu->addItem(new LineBreakItem('-'));
         $subMenu->addItem(new SelectableItem('Go Back', new GoBackAction));
-//        $subMenu->addItem(new SelectableItem('Exit', new ExitAction));
 
         $subMenu->open();
 
         $parentMenu->open();
     }
 
-    private function generateUseCase(CliMenu $menu): string
+    private function generateUseCase(CliMenu $menu, string $boundary = null): string
     {
         while (!$this->domain){
             $this->domain = $this->prompt('domain', $menu);
@@ -120,7 +107,7 @@ class UseCaseMenu extends Menu
             $overwrite = false;
             try {
                 $overwrite = $this->checkUseCase($this->domain, $this->useCase, $menu);
-            } catch (UseCaseAlreadyExistsException | DirectoryDoesNotExistException $e) {
+            } catch (DirectoryDoesNotExistException $e) {
                 $this->useCase = null;
             }
 
@@ -129,10 +116,17 @@ class UseCaseMenu extends Menu
         // Generate Controller
         $type = $this->requireControllerType($menu);
 
-        if (\Str::contains($type,  'Api')) {
-            /** @var  GenerateControllerOutputAdapter $apiControllerOutputAdapter */
-            $apiControllerOutputAdapter = $this->generateController->execute(
-                new GenerateControllerInputAdapter($this->domain, $this->useCase, $overwrite, 'Api')
+        if (Str::contains($type,  'Api')) {
+            /** @var  GenerateFileOutputAdapter $apiControllerOutputAdapter */
+            $apiControllerOutputAdapter = $this->generateFile->execute(
+                new GenerateFileInputAdapter(
+                    $this->useCase,
+                    'api-controller',
+                    'infrastructure',
+                    $this->domain,
+                    $overwrite,
+                    $boundary
+                )
             );
 
             if ($apiControllerOutputAdapter->getStatusCode() != 200) {
@@ -140,10 +134,17 @@ class UseCaseMenu extends Menu
             }
         }
 
-        if (\Str::contains($type,  'Http')) {
-            /** @var  GenerateControllerOutputadapter $httpControllerOutputAdapter */
-            $httpControllerOutputAdapter = $this->generateController->execute(
-                new GenerateControllerInputAdapter($this->domain, $this->useCase, $overwrite, 'Http')
+        if (Str::contains($type,  'Http')) {
+            /** @var  GenerateFileOutputAdapter $apiControllerOutputAdapter */
+            $httpControllerOutputAdapter = $this->generateFile->execute(
+                new GenerateFileInputAdapter(
+                    $this->useCase,
+                    'http-controller',
+                    'infrastructure',
+                    $this->domain,
+                    $overwrite,
+                    $boundary
+                )
             );
 
             if ($httpControllerOutputAdapter->getStatusCode() != 200) {
@@ -152,9 +153,14 @@ class UseCaseMenu extends Menu
         }
 
         // Generate InputAdapter
-        /** @var GenerateInputAdapterOutputAdapter $inputAdapterOutputAdapter */
-        $inputAdapterOutputAdapter = $this->generateInputAdapter->execute(
-            new GenerateInputAdapterInputAdapter($this->domain, $this->useCase, $overwrite)
+        $inputAdapterOutputAdapter = $this->generateFile->execute(
+            new GenerateFileInputAdapter(
+                $this->useCase,
+                'input-adapter',
+                'application',
+                $this->domain,
+                $overwrite,
+                $boundary)
         );
 
         if ($inputAdapterOutputAdapter->getStatusCode() != 200) {
@@ -162,9 +168,14 @@ class UseCaseMenu extends Menu
         }
 
         // Generate OutputAdapter
-        /** @var GenerateOutputAdapterOutputAdapter $outputAdapterOutputAdapter */
-        $outputAdapterOutputAdapter = $this->generateOutputAdapter->execute(
-            new GenerateOutputAdapterInputAdapter($this->domain, $this->useCase, $overwrite)
+        $outputAdapterOutputAdapter = $this->generateFile->execute(
+            new GenerateFileInputAdapter(
+                $this->useCase,
+                'output-adapter',
+                'application',
+                $this->domain,
+                $overwrite,
+                $boundary)
         );
 
         if ($outputAdapterOutputAdapter->getStatusCode() != 200) {
@@ -172,9 +183,15 @@ class UseCaseMenu extends Menu
         }
 
         // Generate Use Case
-        /** @var GenerateUseCaseOutputAdapter $useCaseOutputAdapter */
-        $useCaseOutputAdapter = $this->generateUseCase->execute(
-            new GenerateUseCaseInputAdapter($this->domain, $this->useCase, $overwrite)
+        $useCaseOutputAdapter = $this->generateFile->execute(
+            new GenerateFileInputAdapter(
+                $this->useCase,
+                'use-case',
+                'application',
+                $this->domain,
+                $overwrite,
+                $boundary
+            )
         );
 
         if ($useCaseOutputAdapter->getStatusCode() != 200) {

@@ -2,16 +2,12 @@
 
 namespace Omatech\Hexagon\Infrastructure\Menu;
 
-use Omatech\Hexagon\Application\Action\GenerateAction\GenerateAction;
-use Omatech\Hexagon\Application\Action\GenerateAction\GenerateActionInputAdapter;
-use Omatech\Hexagon\Application\Action\GenerateAction\GenerateActionOutputAdapter;
+use Omatech\Hexagon\Application\File\GenerateFile\GenerateFile;
+use Omatech\Hexagon\Application\File\GenerateFile\GenerateFileInputAdapter;
 use Omatech\Hexagon\Application\ActionRepository\BindRepository\BindRepository;
 use Omatech\Hexagon\Application\ActionRepository\BindRepository\BindRepositoryInputAdapter;
 use Omatech\Hexagon\Application\ActionRepository\BindRepository\BindRepositoryOutputAdapter;
-use Omatech\Hexagon\Application\ActionRepository\GenerateActionRepository\GenerateActionRepository;
-use Omatech\Hexagon\Application\ActionRepository\GenerateActionRepository\GenerateActionRepositoryInputAdapter;
-use Omatech\Hexagon\Application\ActionRepository\GenerateActionRepository\GenerateActionRepositoryOutputAdapter;
-use Omatech\Hexagon\Domain\Action\Exception\ActionAlreadyExistsException;
+use Omatech\Hexagon\Application\File\GenerateFile\GenerateFileOutputAdapter;
 use Omatech\Hexagon\Domain\Base\Exceptions\DirectoryDoesNotExistException;
 use PhpSchool\CliMenu\CliMenu;
 use PhpSchool\CliMenu\Action\GoBackAction;
@@ -24,10 +20,8 @@ use PhpSchool\CliMenu\MenuStyle;
 class ActionMenu extends Menu
 {
 
-    /** @var GenerateAction */
-    private $generateAction;
-    /** @var GenerateActionRepository */
-    private $generateActionRepository;
+    /** @var GenerateFile */
+    private $generateFile;
     /** @var string */
     private $domain;
     /** @var string */
@@ -36,17 +30,15 @@ class ActionMenu extends Menu
     private $bindRepository;
 
     public function __construct(
-        GenerateAction $generateAction,
-        GenerateActionRepository $generateActionRepository,
+        GenerateFile $generateFile,
         BindRepository $bindRepository
     )
     {
-        $this->generateAction = $generateAction;
-        $this->generateActionRepository = $generateActionRepository;
+        $this->generateFile = $generateFile;
         $this->bindRepository = $bindRepository;
     }
 
-    public function show(CliMenu $parentMenu)
+    public function show(CliMenu $parentMenu, string $boundary = null)
     {
         $parentMenu->closeThis();
 
@@ -54,17 +46,20 @@ class ActionMenu extends Menu
 
         $subMenu->setParent($parentMenu);
 
-        try {
-            $domainList = $this->getDomainList('Application');
-        } catch (\Exception $e) {
+        $actionFolder = rtrim(config('hexagonal.directories.infrastructure', 'Infrastructure'), '/') . '/';
+        $actionFolder .= rtrim(config('hexagonal.directories.action', 'Repositories'), '/') . '/';
 
-        }
+        $domainList = $this->getDomainList($boundary);
+//        try {
+//        } catch (\Exception $e) {
+//            dd($e->getMessage());
+//        }
 
         foreach ($domainList as $domainItem) {
-            $subMenu->addItem(new SelectableItem($domainItem, function(CliMenu $menu) {
+            $subMenu->addItem(new SelectableItem($domainItem, function(CliMenu $menu) use ($boundary){
                 $this->domain = $menu->getSelectedItem()->getText();
 
-                $message = $this->generateAction($menu);
+                $message = $this->generateAction($menu, $boundary);
 
                 $style = (new MenuStyle($menu->getTerminal()))
                     ->setBg('blue')
@@ -77,9 +72,9 @@ class ActionMenu extends Menu
             }));
         }
 
-        $subMenu->addItem(new SelectableItem('New Domain', function(CliMenu $menu) {
+        $subMenu->addItem(new SelectableItem('New Domain', function(CliMenu $menu) use ($boundary) {
 
-            $message = $this->generateAction($menu);
+            $message = $this->generateAction($menu, $boundary);
 
             $style = (new MenuStyle($menu->getTerminal()))
                 ->setBg('black')
@@ -94,14 +89,13 @@ class ActionMenu extends Menu
 
         $subMenu->addItem(new LineBreakItem('-'));
         $subMenu->addItem(new SelectableItem('Go Back', new GoBackAction));
-//        $subMenu->addItem(new SelectableItem('Exit', new ExitAction));
 
         $subMenu->open();
 
         $parentMenu->open();
     }
 
-    private function generateAction(CliMenu $menu): string
+    private function generateAction(CliMenu $menu, string $boundary = null): string
     {
         while (!$this->domain){
             $this->domain = $this->prompt('domain', $menu);
@@ -112,17 +106,16 @@ class ActionMenu extends Menu
             $overwrite = false;
             try {
                 $overwrite = $this->checkAction($this->domain, $this->action, $menu);
-            } catch (ActionAlreadyExistsException | DirectoryDoesNotExistException $e) {
+            } catch (DirectoryDoesNotExistException $e) {
                 $this->action = null;
             }
 
         } while(!$this->action && !$overwrite);
 
-
         // Generate Action
-        /** @var GenerateActionOutputAdapter $actionOutputAdapter */
-        $actionOutputAdapter = $this->generateAction->execute(
-            new GenerateActionInputAdapter($this->domain, $this->action, $overwrite)
+        /** @var GenerateFileOutputAdapter $actionOutputAdapter */
+        $actionOutputAdapter = $this->generateFile->execute(
+            new GenerateFileInputAdapter($this->action, 'action', 'infrastructure', $this->domain, $overwrite, $boundary)
         );
 
         if ($actionOutputAdapter->getStatusCode() != 200) {
@@ -130,9 +123,9 @@ class ActionMenu extends Menu
         }
 
         // Generate Action Repository
-        /** @var GenerateActionRepositoryOutputAdapter $actionOutputAdapter */
-        $actionRepositoryOutputAdapter = $this->generateActionRepository->execute(
-            new GenerateActionRepositoryInputAdapter($this->domain, $this->action, $overwrite)
+        /** @var GenerateFileOutputAdapter $actionOutputAdapter */
+        $actionRepositoryOutputAdapter = $this->generateFile->execute(
+            new GenerateFileInputAdapter($this->action, 'action-repository', 'domain' ,$this->domain, $overwrite, $boundary)
         );
 
         if ($actionRepositoryOutputAdapter->getStatusCode() != 200) {
@@ -149,13 +142,14 @@ class ActionMenu extends Menu
                 new BindRepositoryInputAdapter(
                     $this->domain,
                     $instance,
-                    $interface
+                    $interface,
+                    $boundary
                 )
             );
-        }
 
-        if ($bindRepository->getStatusCode() != 200) {
-            $menu->confirm($bindRepository->getOriginalContent()['message']);
+            if ($bindRepository->getStatusCode() != 200) {
+                $menu->confirm($bindRepository->getOriginalContent()['message']);
+            }
         }
 
         $this->domain = null;

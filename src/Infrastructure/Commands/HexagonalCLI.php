@@ -8,6 +8,8 @@ use Omatech\Hexagon\Infrastructure\Menu\DomainObjectMenu;
 use Omatech\Hexagon\Infrastructure\Menu\UseCaseMenu;
 use PhpSchool\CliMenu\Builder\CliMenuBuilder;
 use PhpSchool\CliMenu\CliMenu;
+use PhpSchool\CliMenu\Action\GoBackAction;
+use Illuminate\Support\Str;
 
 final class HexagonalCLI extends Command
 {
@@ -21,6 +23,8 @@ final class HexagonalCLI extends Command
     private $domainObjectMenu;
     /** @var ActionMenu */
     private $actionMenu;
+    /** @var array */
+    private $keys;
 
     public function __construct(
         UseCaseMenu $useCaseMenu,
@@ -41,33 +45,74 @@ final class HexagonalCLI extends Command
 
     private function showMainMenu()
     {
-            $title = config('hexagon.menu.main.title', 'Welcome to Hexagonal For Laravel, Please select an option');
+            $title = config('hexagon.menu.main.title', 'Welcome to Hexagonal For Laravel, ');
+
+            $boundaries = config('hexagon.boundaries');
 
             $menu = (new CliMenuBuilder)
-                ->enableAutoShortcuts()
-                ->setTitle($title)
-                ->addItem('Generate [U]se Case', function (CliMenu $parentMenu) {
-                    $this->useCaseMenu->show($parentMenu);
-                });
+                ->enableAutoShortcuts();
 
-            if (config('hexagon.depth', 1) > 1) {
-                $menu->addItem('Generate Domain [O]bject', function (CliMenu $parentMenu) {
-                    $this->domainObjectMenu->show($parentMenu);
-                });
-            }
+            if (!empty($boundaries)) {
+                $title .= 'Please select a Boundary Context';
 
-            if (config('hexagon.depth', 1) > 2) {
-                $menu->addItem('Generate [A]ction', function (CliMenu $parentMenu) {
-                    $this->actionMenu->show($parentMenu);
-                })->addLineBreak('-');
+                $this->keys = [];
+                foreach ($boundaries as $boundary) {
+                    $title = Str::studly($boundary);
+
+                    $title = $this->getShortcutKey($title) ?? $title;
+
+//                    $title = substr_replace($title, '[' . $title[0] . ']', 0, 1);
+                    $menu->addSubMenu($title, function (CliMenuBuilder $b) use ($boundary) {
+                        $b = $this->addActionItems($b, $boundary);
+                        $b->disableDefaultItems()
+                            ->setTitle('Choose an Action')
+                            ->addItem('Back To Main Menu', new GoBackAction);
+                    });
+                }
+            } else {
+                $title .= 'Please select an Action';
+                $menu = $this->addActionItems($menu);
             }
 
             $menu->setBorder(1, 2, 'yellow')
                 ->setPadding(2, 4)
                 ->setMarginAuto();
 
-        $menu->build()->open();
+        $menu->setTitle($title)->build()->open();
 
         $this->info('See you next time!');
+    }
+
+    private function addActionItems(CliMenuBuilder $menu, string $boundary = null): CliMenuBuilder
+    {
+        $menu->addItem('Generate [U]se Case', function (CliMenu $parentMenu) use ($boundary) {
+            $this->useCaseMenu->show($parentMenu, $boundary);
+        });
+
+        if (config('hexagon.depth', 1) > 1) {
+            $menu->addItem('Generate Domain [O]bject', function (CliMenu $parentMenu) use ($boundary) {
+                $this->domainObjectMenu->show($parentMenu, $boundary);
+            });
+        }
+
+        if (config('hexagon.depth', 1) > 2) {
+            $menu->addItem('Generate [A]ction', function (CliMenu $parentMenu) use ($boundary) {
+                $this->actionMenu->show($parentMenu, $boundary);
+            })->addLineBreak('-');
+        }
+
+        return $menu;
+    }
+
+    private function getShortcutKey(string $text): ?string
+    {
+        for($i = 0; $i < strlen($text); $i++) {
+            if (!in_array($text[$i], $this->keys)) {
+                $this->keys[] = $text[$i];
+                return substr_replace($text, '[' . ucfirst($text[$i]) . ']', $i, 1);
+            }
+        }
+
+        return null;
     }
 }

@@ -31,4 +31,10 @@ class Template
 
         $this->content = str_replace('${' . $variable . '}', $value, $this->content);
     }
+
+    public function clean(): void
+    {
+        $this->content = preg_replace('/\${(.*?)}/', '', $this->content);
+        $this->content = preg_replace('/\n\s*\n\s*\n/s', PHP_EOL, $this->content);
+    }
 }

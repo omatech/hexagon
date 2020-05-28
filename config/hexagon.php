@@ -6,31 +6,65 @@
 return [
     /**
      * Defines the location of files and to save and templates
+     * type:string
      */
     'directories' => [
-        'action' => 'app/Infrastructure/Repositories/',
-        'application' => 'app/Application/',
-        'domain' => 'app/Domain/',
-        'infrastructure' => 'app/Infrastructure/',
-        'input-adapter' => [
-            'name' => 'InputAdapter',  // added to the use case name to generate file name
-            'folder' => '' // location of the input adapter inside use case directory, defaults to use case directory
-        ],
-        'service-providers' => 'app/Providers',
+        'app' => 'app',
+        'action' => 'Infrastructure/Repositories',
+        'application' => 'Application',
+        'domain' => 'Domain',
+        'infrastructure' => 'Infrastructure',
+        'input-adapter' => '',
+        'service-providers' => 'Providers',
         'templates' => 'vendor/omatech/hexagon/templates/',
         'templates_default' => 'vendor/omatech/hexagon/resources/templates/',
-        'output-adapter' => [
-            'name' => 'OutputAdapter', // added to the use case name to generate file name
-            'folder' => '' // location of the output adapter inside use case directory, defaults to use case directory
-        ],
+        'output-adapter' => '',
+        'api-controller' => 'Api/Controllers',
+        'http-controller' => 'Http/Controllers'
+    ],
+
+    /**
+     * Defines names' suffixes for files
+     * type:string
+     */
+    'names' => [
+        'domain-object' => 'DO',
+        'action' => '',
+        'action-repository' => 'Repository',
+        'input-adapter' => 'InputAdapter',
+        'output-adapter' => 'OutputAdapter',
+        'api-controller' => 'Controller',
+        'http-controller' => 'Controller'
+    ],
+
+    /**
+     * Defines if path for a file type has a domain folder
+     * type: bool
+     * default: true
+     */
+    'domain-paths' => [
+        'api-controller' => false,
+        'http-controller' => false
+    ],
+
+    /**
+     * Defines if path for a file type has a use case folder
+     * type: bool
+     * default: false
+     */
+    'use-case-paths' => [
+        'use-case' => true,
+        'input-adapter' => true,
+        'output-adapter' => true,
     ],
 
     /**
      * Menu configuration
+     * type:string
      */
     'menu' => [
         'main' => [
-            'title' => 'Welcome to Hexagon For Laravel, Please select an option'
+            'title' => 'Welcome to Hexagon For Laravel, '
         ]
     ],
 
@@ -40,5 +74,54 @@ return [
      *  2 -> Domain: Generates Domain Objects
      *  3 -> Infrastructure: Generates Actions and Repositories
      */
-    'depth' => 1
+    'depth' => 1,
+
+    /**
+     * Bounded context
+     * If code is split in boundaries, specify them in here
+     */
+    'boundaries' => [],
+
+    /**
+     * Adds availability of dependencies for a template
+     * example: if we want to use of a class in our template of type input-adapter, with an array like
+     * ['type' => 'input-adapter'] we will be able to replace ${InputAdapterNamespace} and ${InputAdapterName}
+     *
+     * available keys:
+     * 'type' => Type of the file we want to use. Defaults: same type as dependant class
+     * 'layer' => Layer where the dependency resides. Defaults: same layer as dependant class
+     * 'domain' => Domain where the dependency belongs. Defaults: same domain as dependant class
+     */
+    'dependencies' => [
+        'api-controller' => [
+            [
+                'type' => 'use-case',
+                'layer' => 'application'
+            ],
+            [
+                'type' => 'input-adapter',
+                'layer' => 'application'
+            ],
+            [
+                'type' => 'output-adapter',
+                'layer' => 'application'
+            ]
+        ],
+        'http-controller' => [
+            [
+                'type' => 'use-case',
+                'layer' => 'application'
+            ],
+            [
+                'type' => 'input-adapter',
+                'layer' => 'application'
+            ],
+            [
+                'type' => 'output-adapter',
+                'layer' => 'application'
+            ]
+        ],
+        'use-case' => [['type' => 'input-adapter'], ['type' => 'output-adapter']],
+    ],
+
 ];

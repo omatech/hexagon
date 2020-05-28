@@ -8,6 +8,7 @@ use PhpSchool\CliMenu\Builder\CliMenuBuilder;
 use PhpSchool\CliMenu\CliMenu;
 use PhpSchool\CliMenu\MenuItem\SelectableItem;
 use PhpSchool\CliMenu\MenuStyle;
+use Illuminate\Support\Arr;
 
 class Menu
 {
@@ -113,7 +114,7 @@ class Menu
         try {
             $directoryList = scandir($directory);
         } catch (\Exception $e) {
-            mkdir($directory);
+            mkdir($directory, 0755, true);
             $directoryList = scandir($directory);
         }
 
@@ -146,12 +147,25 @@ class Menu
         return $controllerType;
     }
 
-    protected function getDomainList($layer = 'Domain'): array
+    protected function getDomainList(string $boundary = null): array
     {
-        $domainDirectory = config('hexagonal.directories.domain', base_path('app/'));
-        $domainDirectory .= $layer;
+        $appDirectory = rtrim(config('hexagonal.directories.app', 'App/'), '/') . '/';
+        $domainDirectory = rtrim(config('hexagonal.directories.domain', 'Domain/'), '/') . '/';
+        $applicationDirectory = rtrim(config('hexagonal.directories.application', 'Application/'), '/') . '/';
 
-        $domainList = $this->getDirectoryContent($domainDirectory);
+        if(!empty($boundary)) {
+            $appDirectory .= rtrim(ucfirst($boundary), '/') . '/';
+        }
+
+        $directories  = [base_path($appDirectory . $domainDirectory), base_path($appDirectory . $applicationDirectory)];
+
+        $domains = [];
+
+        foreach ($directories as $directory) {
+            $domains[] = $this->getDirectoryContent($directory);
+        }
+
+        $domainList = array_unique(Arr::flatten($domains));
 
         return array_filter($domainList, function ($item)
         {

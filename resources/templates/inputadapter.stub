@@ -1,15 +1,14 @@
 <?php
 
-namespace App\Application\${Domain}\${UseCase}${Folder};
+namespace ${Namespace};
 
-final class ${UseCase}${Name}
+final class ${Name}
 {
+    ${Attributes}
 
-    // ${Attributes}
-
-    public function __construct( /* ${AttributesWithTypes} */) {
-        /* ${AttributeAssignation} */
+    public function __construct(${AttributesWithTypes}) {
+        ${AttributeAssignation}
     }
 
-    // ${AttributeGetters}
+    ${AttributeGetters}
 }

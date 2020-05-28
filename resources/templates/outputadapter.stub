@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Application\${Domain}\${UseCase}${Folder};
+namespace ${Namespace};
 
 use Illuminate\Http\JsonResponse;
 
-final class ${UseCase}${Name} extends JsonResponse
+final class ${Name} extends JsonResponse
 {
-    public static function ofSuccess(): ${UseCase}${Name}
+    public static function ofSuccess(): ${Name}
     {
         return self::create([], 200);
     }
 
-    public static function ofError(string $message, $errorCode = 400): ${UseCase}${Name}
+    public static function ofError(string $message, $errorCode = 400): ${Name}
     {
         return self::create(['message' => $message], $errorCode);
     }

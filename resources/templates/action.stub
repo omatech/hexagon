@@ -1,9 +1,9 @@
 <?php
 
-namespace ${NamespaceRoute}${Domain};
+namespace ${Namespace};
 
-use App\Domain\${Domain}\${Action}Repository;
+use ${DomainNamespace}\${Domain}\${Name}Repository;
 
-class ${Action} implements ${Action}Repository
+class ${Name} implements ${Name}Repository
 {
 }

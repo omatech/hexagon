@@ -2,6 +2,7 @@
 
 namespace Omatech\Hexagon\Application\ActionRepository\BindRepository;
 
+use Omatech\Hexagon\Domain\File\File;
 use Omatech\Hexagon\Domain\File\WriteFileRepository;
 use Omatech\Hexagon\Domain\ServiceProvider\GetServiceProviderRepository;
 use Omatech\Hexagon\Domain\ServiceProvider\ServiceProvider;
@@ -32,7 +33,7 @@ final class BindRepository
         $this->writeFileRepository = $writeFileRepository;
     }
 
-    public function execute(BindRepositoryInputAdapter $inputAdapter): BindRepositoryOutputAdapter
+    public function execute(BindRepositoryInputAdapter $request): BindRepositoryOutputAdapter
     {
         // TODO: Bind Repository
         try {
@@ -45,18 +46,24 @@ final class BindRepository
 
         try {
             // Add use for repository and action
-            $domainFolder = config('hexagon.directories.domain', 'app/Domain');
-            $domainNamespace = str_replace('/', '\\', $domainFolder);
-            $domainNamespace = rtrim($domainNamespace, '\\');
-            $repositoryNamespace = $domainNamespace . '\\' . $inputAdapter->getDomain();
-            $repositoryUse = 'use ' . $repositoryNamespace . '\\'
-                . $inputAdapter->getRepository() . ';' . PHP_EOL;
+            $action = new File(
+                $request->getAction(),
+                'action',
+                'infrastructure',
+                $request->getDomain(),
+                $request->getBoundary()
+            );
+            $repository = new File(
+                $request->getRepository(),
+                'action-repository',
+                'domain',
+                $request->getDomain(),
+                $request->getBoundary()
+            );
 
-            $infrastructureFolder = config('hexagon.directories.infrastructure', 'app/Infrastructure');
-            $infrastructureNamespace = str_replace('/', '\\', $infrastructureFolder);
-            $infrastructureNamespace = rtrim($infrastructureNamespace, '\\');
-            $actionNamespace = $infrastructureNamespace . '\\Repositories\\' . $inputAdapter->getDomain();
-            $actionUse = 'use ' . $actionNamespace . '\\' . $inputAdapter->getAction() . ';' . PHP_EOL;
+            $repositoryUse = $repository->getUse() . PHP_EOL;
+
+            $actionUse = $action->getUse() . PHP_EOL;
 
             $serviceProvider->addUse($actionUse, $serviceProvider->calculateUsePosition());
             $serviceProvider->addUse($repositoryUse, $serviceProvider->calculateUsePosition());
@@ -64,8 +71,8 @@ final class BindRepository
             // Add Repository
 
             $bind = '        $this->app->bind(' . PHP_EOL;
-            $bind .= '            ' . $inputAdapter->getRepository() . '::class,' . PHP_EOL;
-            $bind .= '            ' . $inputAdapter->getAction() . '::class' . PHP_EOL;
+            $bind .= '            ' . $repository->getName() . '::class,' . PHP_EOL;
+            $bind .= '            ' . $action->getName() . '::class' . PHP_EOL;
             $bind .= '         );' . PHP_EOL;
 
             $serviceProvider->addBind($bind, $serviceProvider->calculateBindPosition());
@@ -78,7 +85,6 @@ final class BindRepository
 
         } catch (\Exception $e) {
 
-            dd($e->getMessage());
             return BindRepositoryOutputAdapter::ofError($e->getMessage());
         }
 

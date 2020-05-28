@@ -1,7 +1,7 @@
 <?php
 
-namespace App\Domain\${Domain};
+namespace ${DomainNamespace}\${Domain};
 
-interface ${Action}Repository
+interface ${Name}
 {
 }
