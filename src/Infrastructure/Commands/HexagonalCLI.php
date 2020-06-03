@@ -55,7 +55,7 @@ final class HexagonalCLI extends Command
             if (!empty($boundaries)) {
                 $title .= 'Please select a Boundary Context';
 
-                $this->keys = [];
+                $this->keys = ['N'];
                 foreach ($boundaries as $boundary) {
                     $title = Str::studly($boundary);
 
@@ -69,6 +69,15 @@ final class HexagonalCLI extends Command
                             ->addItem('Back To Main Menu', new GoBackAction);
                     });
                 }
+
+                $menu->addSubMenu('[N]o Context', function (CliMenuBuilder $b) {
+                    $b = $this->addActionItems($b, null);
+                    $b->disableDefaultItems()
+                        ->setTitle('Choose an Action')
+                        ->addItem('Back To Main Menu', new GoBackAction);
+                });
+
+
             } else {
                 $title .= 'Please select an Action';
                 $menu = $this->addActionItems($menu);
