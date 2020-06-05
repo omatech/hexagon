@@ -45,47 +45,44 @@ final class HexagonalCLI extends Command
 
     private function showMainMenu()
     {
-            $title = config('hexagon.menu.main.title', 'Welcome to Hexagonal For Laravel, ');
+        $title = config('hexagon.menu.main.title', 'Welcome to Hexagonal For Laravel, ');
 
-            $boundaries = config('hexagon.boundaries');
+        $boundaries = config('hexagon.boundaries');
 
-            $menu = (new CliMenuBuilder)
-                ->enableAutoShortcuts();
+        $menu = (new CliMenuBuilder)->enableAutoShortcuts();
 
-            if (!empty($boundaries)) {
-                $title .= 'Please select a Boundary Context';
+        if (!empty($boundaries)) {
+            $title .= 'Please select a Boundary Context';
 
-                $this->keys = ['N'];
-                foreach ($boundaries as $boundary) {
-                    $title = Str::studly($boundary);
+            $this->keys = ['N'];
+            foreach ($boundaries as $boundary) {
+                $title = Str::studly($boundary);
 
-                    $title = $this->getShortcutKey($title) ?? $title;
 
-//                    $title = substr_replace($title, '[' . $title[0] . ']', 0, 1);
-                    $menu->addSubMenu($title, function (CliMenuBuilder $b) use ($boundary) {
-                        $b = $this->addActionItems($b, $boundary);
-                        $b->disableDefaultItems()
-                            ->setTitle('Choose an Action')
-                            ->addItem('Back To Main Menu', new GoBackAction);
-                    });
-                }
+                $title = $this->getShortcutKey($title) ?? $title;
 
-                $menu->addSubMenu('[N]o Context', function (CliMenuBuilder $b) {
-                    $b = $this->addActionItems($b, null);
+                $menu->addSubMenu($title, function (CliMenuBuilder $b) use ($boundary) {
+                    $b = $this->addActionItems($b, $boundary);
                     $b->disableDefaultItems()
                         ->setTitle('Choose an Action')
                         ->addItem('Back To Main Menu', new GoBackAction);
                 });
-
-
-            } else {
-                $title .= 'Please select an Action';
-                $menu = $this->addActionItems($menu);
             }
 
-            $menu->setBorder(1, 2, 'yellow')
-                ->setPadding(2, 4)
-                ->setMarginAuto();
+            $menu->addSubMenu('[N]o Context', function (CliMenuBuilder $b) {
+                $b = $this->addActionItems($b, null);
+                $b->disableDefaultItems()
+                    ->setTitle('Choose an Action')
+                    ->addItem('Back To Main Menu', new GoBackAction);
+            });
+
+
+        } else {
+            $title .= 'Please select an Action';
+            $menu = $this->addActionItems($menu);
+        }
+
+        $menu->setBorder(1, 2, 'yellow')->setPadding(2, 4)->setMarginAuto();
 
         $menu->setTitle($title)->build()->open();
 

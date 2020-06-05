@@ -10,7 +10,7 @@ return [
      */
     'directories' => [
         'app' => 'app',
-        'action' => 'Infrastructure/Repositories',
+        'action' => 'Repositories',
         'application' => 'Application',
         'domain' => 'Domain',
         'infrastructure' => 'Infrastructure',
@@ -24,17 +24,17 @@ return [
     ],
 
     /**
-     * Defines names' suffixes for files
+     * Defines names' prefixes and suffixes for files
      * type:string
      */
     'names' => [
-        'domain-object' => 'DO',
-        'action' => '',
-        'action-repository' => 'Repository',
-        'input-adapter' => 'InputAdapter',
-        'output-adapter' => 'OutputAdapter',
-        'api-controller' => 'Controller',
-        'http-controller' => 'Controller'
+        'domain-object' => ['suffix' => 'DO'],
+        'action' => [],
+        'action-repository' => ['suffix' => 'Repository'],
+        'input-adapter' => ['suffix' => 'InputAdapter'],
+        'output-adapter' => ['suffix' => 'OutputAdapter'],
+        'api-controller' => ['suffix' => 'Controller'],
+        'http-controller' => ['suffix' => 'Controller']
     ],
 
     /**

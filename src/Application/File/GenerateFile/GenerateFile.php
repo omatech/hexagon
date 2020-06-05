@@ -50,7 +50,6 @@ final class GenerateFile
             }
         }
         $this->template->clean();
-//        if($request->getType() === 'use-case') dd($this->template->getContent());
 
         try {
             $this->instantiateRepository->execute($this->template->getContent(), base_path($path), $file->getName('.php'));

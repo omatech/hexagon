@@ -118,8 +118,9 @@ class File
 
     public function getName(?string $extension = ''): string
     {
-        $suffix = config('hexagon.names.' . $this->type, '');
-        return self::strToStudly($this->name) . $suffix . $extension;
+        $suffix = config('hexagon.names.' . $this->type . '.suffix', '');
+        $prefix = config('hexagon.names.' . $this->type . '.prefix', '');
+        return $prefix . self::strToStudly($this->name) . $suffix . $extension;
     }
 
     public function getBoundary(): string
